@@ -1,0 +1,7 @@
+inst/
+data-raw/
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+cran-comments.md

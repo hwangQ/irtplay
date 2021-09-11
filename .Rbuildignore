@@ -1,0 +1,9 @@
+^NEWS\.Rmd$
+^README\.Rmd$
+^irtplay\.pdf$
+^\.gitignore$
+^cran-comments\.md$
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+
