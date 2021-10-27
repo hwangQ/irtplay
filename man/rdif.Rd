@@ -57,9 +57,10 @@ Default is .05.}
 \item{purify.by}{A character string specifying a RDIF statistic with which the purification is implemented. Available statistics 
 are "rdif_rs" for \eqn{RDIF_{RS}}, "rdif_r" for \eqn{RDIF_{R}}, and "rdif_s" for \eqn{RDIF_{S}}.}
 
-\item{max.iter}{An integer value specifying a maximum number of iterations for the purification process. Default is 10.}
+\item{max.iter}{An positive integer value specifying the maximum number of iterations for the purification process. Default is 10.}
 
-\item{min.resp}{An integer value?? Default is NULL.}
+\item{min.resp}{An positive integer value specifying the minimum number of item responses for an examinee when scoring is conducted. 
+Default is NULL. See details below for more information.}
 
 \item{method}{A character string indicating a scoring method. Available methods are "MLE" for the maximum likelihood estimation, 
 "MAP" for the maximum a posteriori estimation, and "EAP" for the expected a posteriori estimation. Default method is "MLE".}
@@ -96,6 +97,7 @@ This function returns a list of four internal objects. The four objects are:
        covariance of \eqn{RDIF_{R}} and \eqn{RDIF_{S}}, respectively.}
       \item{dif_item}{A list of three numeric vectors showing potential DIF items flagged by each of the RDIF statistics. Each of the numeric vector 
        means the items flagged by \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, respectively.}
+      \item{score}{A vector of ability estimates used to compute the RDIF statistics.}
    }
 }
 \item{purify}{A logical value indicating whether the purification process was used.} 
@@ -114,6 +116,7 @@ This function returns a list of four internal objects. The four objects are:
       \item{dif_item}{A list of three numeric vectors showing potential DIF items flagged by each of the RDIF statistics. Each of the numeric vector 
        means the items flagged by \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, respectively.}
       \item{n.iter}{A total number of iterations repleated for the purification.}
+      \item{score}{A vector of final purified ability estimates used to compute the RDIF statistics.}
       \item{complete}{A logical value indicating whether the purification process was completed. If FALSE, it means that the purification process 
        reached the maximum iteration number but it was not complete.}
     }
@@ -136,23 +139,32 @@ with 2 degrees of freedom. See Lim et al. (2021) for more details about RDIF fra
 
 The \code{\link{rdif}} function computes all three RDIF statistics of \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}. The current 
 version of \code{\link{rdif}} function only supports dichotomous item response data. To compute the three statistics, the \code{\link{rdif}} function 
-requires (1) the item parameter estimates using aggregate data regardless of group membership, (2) examinees' ability estimates 
-(e.g., MLE), and (3) examinees' item response data. Note that the ability estimates need to be obtained from the aggregate data-based 
+requires (1) item parameter estimates obtained from aggregate data regardless of group membership, (2) examinees' ability estimates 
+(e.g., MLE), and (3) examinees' item response data. Note that the ability estimates need to be computed using the aggregate data-based 
 item parameter estimates. The item parameter estimates should be provided in the \code{x} argument, the ability estimates should 
 be provided in the \code{score} argument, and the response data should be provided in the \code{data} argument. When the abilities 
-are not given in the \code{score} argument (i.e., \code{score = NULL}), the \code{\link{rdif}} function estimates examinee's abilities 
+are not given in the \code{score} argument (i.e., \code{score = NULL}), the \code{\link{rdif}} function estimates examinees' abilities 
 automatically using the scoring method specified in the \code{method} argument (e.g., \code{method = "MLE"}). 
 
-The \code{group} argument accepts a vector of either two distinct numeric or character variable. Between two distinct variable, one is to 
+The \code{group} argument accepts a vector of either two distinct numeric or character variables. Between two distinct variable, one is to 
 represent the reference group and another one is to represent the focal group. The length of the vector should be the same with the number
 of rows in the response data and each value in the vector should indicate each examinee of the response data. Once the \code{gruop} is 
 specified, a single numeric or character value needs to be provided in the \code{focal.name} argument to define which group variable in 
 the \code{group} argument represents the focal group.   
 
-As with many other DIF detection approaches, an iterative purification process can be implemented for the RDIF framework. 
+As other DIF detection approaches, an iterative purification process can be implemented for the RDIF framework. 
 When \code{purify = TRUE}, the purification process is implemented based on one of RDIF statistics specified in the \code{purify.by} 
-argument (e.g, \code{purify.by="rdif_rs"}). The iterative purification process stop when no further DIF items are found or 
-the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument.
+argument (e.g, \code{purify.by="rdif_rs"}). At each iterative purification, examinees' latent abilities are computed using purified items and 
+scoring method specified in the \code{method} argument. The iterative purification process stops when no further DIF items are found or 
+the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument. See Lim et al. (2021) 
+for more details about the purification procedure.
+
+Scoring with a few items entails large standard errors which in turn could compromise DIF detection with RDIF framework. 
+The \code{min.resp} argument can be used to avoid using scores with large standard errors when computing the RDIF statistics, espeically 
+during the purification process. For example, if \code{min.resp} is not NULL (e.g., \code{min.resp=5}), item responses of examinees 
+whose tally of item responses are less than the specified minimum number are treated as missing values (i.e., NA). Accordingly, 
+their ability estimates become missing values and are not used for computing the RDIF statistics. If \code{min.resp=NULL}, 
+an examinee's score will be computed as long as there exists, at least, 1 item response for the examinee.
 }
 \examples{
 \donttest{
@@ -222,35 +234,35 @@ group <- c(rep(0, 500), rep(1, 500))
 #       and without a purification 
 dif_nopuri_1 <- rdif(x=est_par, data=data, score=score, 
                      group=group, focal.name=1, D=1, alpha=0.05)
-print(dif_nopuri_1$no_purify)
+print(dif_nopuri_1)
 
 # (a)-2 compute RDIF statistics by not providing scores 
 #       and without a purification 
 dif_nopuri_2 <- rdif(x=est_par, data=data, score=NULL, 
                      group=group, focal.name=1, D=1, alpha=0.05, 
                      method="MLE")
-print(dif_nopuri_2$no_purify)
+print(dif_nopuri_2)
 
 # (b)-1 compute RDIF statistics with a purification 
 #       based on \eqn{RDIF_{R}}
 dif_puri_r <- rdif(x=est_par, data=data, score=score, 
                    group=group, focal.name=1, D=1, alpha=0.05, 
                    purify=TRUE, purify.by="rdif_r")
-print(dif_puri_r$with_purify)
+print(dif_puri_r)
 
 # (b)-2 compute RDIF statistics with a purification 
 #       based on \eqn{RDIF_{S}}
 dif_puri_s <- rdif(x=est_par, data=data, score=score, 
                    group=group, focal.name=1, D=1, alpha=0.05, 
                    purify=TRUE, purify.by="rdif_s")
-print(dif_puri_s$with_purify)
+print(dif_puri_s)
 
 # (b)-3 compute RDIF statistics with a purification 
 #       based on \eqn{RDIF_{RS}}
 dif_puri_rs <- rdif(x=est_par, data=data, score=score, 
                     group=group, focal.name=1, D=1, alpha=0.05, 
                     purify=TRUE, purify.by="rdif_rs")
-print(dif_puri_rs$with_purify)
+print(dif_puri_rs)
 }
 
 }

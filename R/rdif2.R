@@ -43,7 +43,6 @@
 #' @param ncore The number of logical CPU cores to use. Default is 1. See \code{\link{est_score}} for details.
 #' @param verbose A logical value. If TRUE, the progress messages of purification procedure are suppressed. Default is TRUE.
 #' 
-#' 
 rdif2 <- function(x, data, score=NULL, se=NULL, reg.cr=FALSE, group, focal.name, D=1, alpha=0.05, missing=NA, purify=FALSE, 
                   purify.by=c("rdif_rs", "rdif_r", "rdif_s"), max.iter=10, min.resp=NULL, method="MLE", 
                   range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE) {

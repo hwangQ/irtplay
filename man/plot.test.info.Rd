@@ -7,6 +7,8 @@
 \method{plot}{test.info}(
   x,
   item.loc = NULL,
+  overlap = FALSE,
+  csee = FALSE,
   xlab.text,
   ylab.text,
   main.text,
@@ -26,6 +28,12 @@
 \item{item.loc}{A vector of numeric values indicating that the item information functions of the \emph{n}th items
 (or the location of items in a test form) are plotted. If NULL, the test information function for the total test form is drawn.
 Default is NULL.}
+
+\item{overlap}{Logical value indicating whether multiple item information functions are plotted in one panel. 
+If FALSE, multiple item information functions are displayed in multiple panels, one for each.}
+
+\item{csee}{Logical value indicating whether the function displays the conditional standard error of estimation (CSEE) at a test level. 
+If FALSE, item/test information function is plotted. Note that the CSEE plot is displayed only at a test level.}
 
 \item{xlab.text, ylab.text}{A title for the x and y axes.}
 
@@ -50,7 +58,8 @@ the multiple items. Default is 4.}
 \item{...}{Further arguments passed from the function \code{geom_line()} in the \pkg{ggplot2} package.}
 }
 \description{
-This function plots item or test information function given a specified theta values.
+This function plots item or test information function given a specified theta values. In addition, 
+this function displays conditional standard errors at a test level.
 }
 \details{
 All of the plots are drawn using the ggplot2 package.
@@ -76,9 +85,14 @@ plot(x)
 # draw a plot of the item information function for the second item
 plot(x, item.loc=2)
 
-# draw a plot of the item information function for the mutiple items
-plot(x, item.loc=1:8)
+# draw a plot of multiple item information functions across the multiple panels
+plot(x, item.loc=1:8, overlap=FALSE)
 
+# draw a plot of multiple item information functions across in one panel
+plot(x, item.loc=1:8, overlap=TRUE)
+
+# draw a plot of conditional standard error at a test level
+plot(x, csee=TRUE)
 
 }
 \seealso{

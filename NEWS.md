@@ -1,25 +1,48 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# irtplay\_1.6.3 (2021-06-09)
+# irtplay\_1.6.3 (2021-10-26)
 
-o fixed an error of ‘est\_score’ function which occurs when an examinee
-has missing data for all polytomous items or dichotomous items (thanks
-to Craig Wells).
+o updated the `est_irt()` function to estimate the population latent
+ability distribution only when all item parameters are fixed in a test
+using the fixed item parameter calibration (FIPC).
 
-o fixed a few minor issues of ‘irtfit’ function (thanks to Dimitrios
+o fixed the `est_irt()` function so that the log-likelihood, AIC, and
+BIC can be computed based on both the fixed- and freely estimated items
+when the FIPC is implemented. In the previous version, those valused
+were computed based on only freely estimated items.
+
+o added a new argument of ‘item.id’ in the ‘est\_irt()’ and
+‘est\_item()’ functions where a user can provide item IDs.
+
+o added a new ‘rdif()’ function which computes RDIF statistics (Lim,
+Choe, & Han, 2021) for analyzing DIF.
+
+o updated ‘plot.test.info()’ function so that (a) multiple item
+information functions can be displayed in one panel by setting ‘overlap
+= TRUE’ and (b) a plot of conditional standard error of estimation at a
+test level can be shown by setting ‘csee = TRUE’.
+
+o updated ‘est\_score()’ function to make it return NA values for
+examinees who have all missing responses.
+
+o fixed an error of ‘est\_score()’ function which occurs when an
+examinee has missing data for all polytomous items or dichotomous items
+(thanks to Craig Wells).
+
+o fixed a few minor issues of ‘irtfit()’ function (thanks to Dimitrios
 Zacharatos).
 
-o Updated ‘bring.flexmirt’ function to read the empirical histogram of
+o Updated ‘bring.flexmirt()’ function to read the empirical histogram of
 population distribution from “-prm.txt” file.
 
-o Updated ‘run\_flexmirt’ function to run flexMIRT in which version is
+o Updated ‘run\_flexmirt()’ function to run flexMIRT in which version is
 \>= 3.6.
 
-o Updated ‘est\_item’ function to produce a variance-covariance matrix
+o Updated ‘est\_item()’ function to produce a variance-covariance matrix
 for item parameter estimates.
 
-o Added ‘vcov’ method for ‘est\_item’ function.
+o Added ‘vcov()’ method for ‘est\_item’ function.
 
 # irtplay\_1.6.2 (2020-12-14)
 

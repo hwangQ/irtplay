@@ -1,4 +1,4 @@
-# This function computest a matrix of loglikelihoods for obtaining the observed item responses across examinees given theta values
+# This function computes a matrix of log-likelihoods for obtaining the observed item responses across examinees given theta values
 # This function is used for MMLE-EM algorithm
 likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, theta, D=1) {
 
@@ -6,11 +6,11 @@ likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, thet
   # when there are dichotomous items
   if(!is.null(data1_drm)) {
 
-    # compute the probabilities of answerting correctly on items
+    # compute the probabilities of answering correctly on items
     ps <- drm(theta=theta, a=meta$drm$a, b=meta$drm$b, g=meta$drm$g, D=D)
     if(length(theta) == 1L) ps <- matrix(ps)
 
-    # compute the probabilities of answerting incorrectly on items
+    # compute the probabilities of answering incorrectly on items
     qs <- 1 - ps
 
     # to prevent that log(ps) and log(qs) have -Inf values
@@ -21,7 +21,7 @@ likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, thet
     log_ps <- ifelse(is.infinite(log_ps), log(1e-20), log_ps)
     log_qs <- ifelse(is.infinite(log_qs), log(1e-20), log_qs)
 
-    # compte the likelihood values for all examinees at each quadrature point
+    # compute the likelihood values for all examinees at each quadrature point
     # a row indicate the examinee and column indicate the quad point
     llike_drm <- tcrossprod(x=data1_drm, y=log_ps) + tcrossprod(x=data2_drm, y=log_qs)
   } else {

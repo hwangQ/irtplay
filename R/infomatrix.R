@@ -48,7 +48,7 @@ info_mstep <- function(item_par, f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM
 info_xpd <- function(meta, freq.cat, post_dist, cats, model, quadpt, D=1, loc_1p_const, loc_else, nstd,
                      fix.a.1pl, fix.a.gpcm, fix.g, a.val.1pl, a.val.gpcm, g.val, reloc.par) {
 
-  # a create empty matrix to contain the kernel of fishre identify equation
+  # a create empty matrix to contain the kernel of fisher identity equation
   # across all item response patterns
   kernel_fisher <- 0L
 

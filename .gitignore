@@ -1,7 +1,9 @@
-inst/
+.Rproj.user
 data-raw/
 .Rproj.user
 .Rhistory
-.RData
+.Rdata
 .Ruserdata
 cran-comments.md
+R/rdif2.R
+R/catsib.R

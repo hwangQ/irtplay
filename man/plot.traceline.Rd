@@ -8,6 +8,7 @@
   x,
   item.loc = NULL,
   score.curve = FALSE,
+  overlap = FALSE,
   layout.col = 2,
   xlab.text,
   ylab.text,
@@ -31,7 +32,11 @@ If NULL, the TCC based on a total test form is drawn. Default is NULL.}
 in a panel. Otherwise, ICCs for all score categories are plotted in separate panels. For a dichotomous item, the item score curve is the same as
 the ICC of score category 1. Ignored when \code{item.loc = NULL}. Default is FALSE.}
 
-\item{layout.col}{An integer value indicating the number of columns in the panel when displaying ICCs for an item.}
+\item{overlap}{Logical value indicating whether multiple item score curves are plotted in one panel. 
+If FALSE, the multiple item score curves are displayed with multiple panels, one for each.}
+
+\item{layout.col}{An integer value indicating the number of columns in the panel when displaying ICCs for an item or 
+when displaying multiple item scores with multiple panels.}
 
 \item{xlab.text, ylab.text}{A title for the x and y axes.}
 
@@ -60,8 +65,8 @@ based on a total test form.
 \details{
 All of the plots are drawn using the ggplot2 package.
 If \code{item.loc = NULL}, the TCC based on the total test form is plotted. In the argument \code{item.loc},
-a numeric value should be specified to indicate the \emph{n}th item among the total test form. For example,
-if there are ten items in the test form and the ICCs of the third item should be plotted, then \code{item.loc = 3}.
+a vector of positive integer values should be specified to indicate the \emph{n}th items among the total test form. For example,
+if there are ten items in the test form and the score curves of the 1st, 2nd, and 3rd items should be plotted, then \code{item.loc = 1:3}.
 }
 \examples{
 ## example
@@ -79,7 +84,7 @@ theta <- seq(-3, 3, 0.1)
 # characteristic functions given the theta values
 x <- traceline(x=test_flex, theta, D=1)
 
-# plot TCC based on the toal test form
+# plot TCC based on the total test form
 plot(x, item.loc=NULL)
 
 # plot ICCs for the first item (dichotomous item)
@@ -88,11 +93,27 @@ plot(x, item.loc=1, score.curve=FALSE, layout.col=2)
 # plot item score curve for the first item (dichotomous item)
 plot(x, item.loc=1, score.curve=TRUE)
 
-# plot ICCs for the last item (plolytomous item)
+# plot item score curves for the first six dichotomous items
+# with multiple panels 
+plot(x, item.loc=1:6, score.curve=TRUE, overlap=FALSE)
+
+# plot item score curve for the first six dichotomous items
+# in one panel
+plot(x, item.loc=1:6, score.curve=TRUE, overlap=TRUE)
+
+# plot ICCs for the last item (polytomous item)
 plot(x, item.loc=55, score.curve=FALSE, layout.col=2)
 
-# plot item score curve for the last item (plolytomous item)
+# plot item score curve for the last item (polytomous item)
 plot(x, item.loc=55, score.curve=TRUE)
+
+# plot item score curves for the last three polytomous items
+# with multiple panels
+plot(x, item.loc=53:55, score.curve=TRUE, overlap=FALSE)
+
+# plot item score curves for the last three poltyomous items
+# in one panel
+plot(x, item.loc=53:55, score.curve=TRUE, overlap=TRUE)
 
 }
 \seealso{

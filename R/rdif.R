@@ -26,8 +26,9 @@
 #' @param purify A logical value indicating whether a purification process will be implemented or not. Default is FALSE.   
 #' @param purify.by A character string specifying a RDIF statistic with which the purification is implemented. Available statistics 
 #' are "rdif_rs" for \eqn{RDIF_{RS}}, "rdif_r" for \eqn{RDIF_{R}}, and "rdif_s" for \eqn{RDIF_{S}}. 
-#' @param max.iter An integer value specifying a maximum number of iterations for the purification process. Default is 10. 
-#' @param min.resp An integer value?? Default is NULL. 
+#' @param max.iter An positive integer value specifying the maximum number of iterations for the purification process. Default is 10. 
+#' @param min.resp An positive integer value specifying the minimum number of item responses for an examinee when scoring is conducted. 
+#' Default is NULL. See details below for more information.  
 #' @param method A character string indicating a scoring method. Available methods are "MLE" for the maximum likelihood estimation, 
 #' "MAP" for the maximum a posteriori estimation, and "EAP" for the expected a posteriori estimation. Default method is "MLE".
 #' @param range A numeric vector of two components to restrict the range of ability scale for the MLE. Default is c(-4, 4).
@@ -51,23 +52,33 @@
 #' 
 #' The \code{\link{rdif}} function computes all three RDIF statistics of \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}. The current 
 #' version of \code{\link{rdif}} function only supports dichotomous item response data. To compute the three statistics, the \code{\link{rdif}} function 
-#' requires (1) the item parameter estimates using aggregate data regardless of group membership, (2) examinees' ability estimates 
-#' (e.g., MLE), and (3) examinees' item response data. Note that the ability estimates need to be obtained from the aggregate data-based 
+#' requires (1) item parameter estimates obtained from aggregate data regardless of group membership, (2) examinees' ability estimates 
+#' (e.g., MLE), and (3) examinees' item response data. Note that the ability estimates need to be computed using the aggregate data-based 
 #' item parameter estimates. The item parameter estimates should be provided in the \code{x} argument, the ability estimates should 
 #' be provided in the \code{score} argument, and the response data should be provided in the \code{data} argument. When the abilities 
-#' are not given in the \code{score} argument (i.e., \code{score = NULL}), the \code{\link{rdif}} function estimates examinee's abilities 
+#' are not given in the \code{score} argument (i.e., \code{score = NULL}), the \code{\link{rdif}} function estimates examinees' abilities 
 #' automatically using the scoring method specified in the \code{method} argument (e.g., \code{method = "MLE"}). 
 #' 
-#' The \code{group} argument accepts a vector of either two distinct numeric or character variable. Between two distinct variable, one is to 
+#' The \code{group} argument accepts a vector of either two distinct numeric or character variables. Between two distinct variable, one is to 
 #' represent the reference group and another one is to represent the focal group. The length of the vector should be the same with the number
 #' of rows in the response data and each value in the vector should indicate each examinee of the response data. Once the \code{gruop} is 
 #' specified, a single numeric or character value needs to be provided in the \code{focal.name} argument to define which group variable in 
 #' the \code{group} argument represents the focal group.   
 #' 
-#' As with many other DIF detection approaches, an iterative purification process can be implemented for the RDIF framework. 
+#' As other DIF detection approaches, an iterative purification process can be implemented for the RDIF framework. 
 #' When \code{purify = TRUE}, the purification process is implemented based on one of RDIF statistics specified in the \code{purify.by} 
-#' argument (e.g, \code{purify.by="rdif_rs"}). The iterative purification process stop when no further DIF items are found or 
-#' the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument.    
+#' argument (e.g, \code{purify.by="rdif_rs"}). At each iterative purification, examinees' latent abilities are computed using purified items and 
+#' scoring method specified in the \code{method} argument. The iterative purification process stops when no further DIF items are found or 
+#' the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument. See Lim et al. (2021) 
+#' for more details about the purification procedure.
+#' 
+#' Scoring with a few items entails large standard errors which in turn could compromise DIF detection with RDIF framework. 
+#' The \code{min.resp} argument can be used to avoid using scores with large standard errors when computing the RDIF statistics, espeically 
+#' during the purification process. For example, if \code{min.resp} is not NULL (e.g., \code{min.resp=5}), item responses of examinees 
+#' whose tally of item responses are less than the specified minimum number are treated as missing values (i.e., NA). Accordingly, 
+#' their ability estimates become missing values and are not used for computing the RDIF statistics. If \code{min.resp=NULL}, 
+#' an examinee's score will be computed as long as there exists, at least, 1 item response for the examinee. 
+#' 
 #' 
 #' @return This function returns a list of four internal objects. The four objects are: 
 #' \item{no_purify}{A list of several sub-objects containing the results of DIF analysis without a purification procedure. The sub-objects are: 
@@ -82,6 +93,7 @@
 #'        covariance of \eqn{RDIF_{R}} and \eqn{RDIF_{S}}, respectively.}
 #'       \item{dif_item}{A list of three numeric vectors showing potential DIF items flagged by each of the RDIF statistics. Each of the numeric vector 
 #'        means the items flagged by \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, respectively.}
+#'       \item{score}{A vector of ability estimates used to compute the RDIF statistics.}
 #'    }
 #' }
 #' \item{purify}{A logical value indicating whether the purification process was used.} 
@@ -100,6 +112,7 @@
 #'       \item{dif_item}{A list of three numeric vectors showing potential DIF items flagged by each of the RDIF statistics. Each of the numeric vector 
 #'        means the items flagged by \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, respectively.}
 #'       \item{n.iter}{A total number of iterations repleated for the purification.}
+#'       \item{score}{A vector of final purified ability estimates used to compute the RDIF statistics.}
 #'       \item{complete}{A logical value indicating whether the purification process was completed. If FALSE, it means that the purification process 
 #'        reached the maximum iteration number but it was not complete.}
 #'     }
@@ -184,35 +197,35 @@
 #' #       and without a purification 
 #' dif_nopuri_1 <- rdif(x=est_par, data=data, score=score, 
 #'                      group=group, focal.name=1, D=1, alpha=0.05)
-#' print(dif_nopuri_1$no_purify)
+#' print(dif_nopuri_1)
 #' 
 #' # (a)-2 compute RDIF statistics by not providing scores 
 #' #       and without a purification 
 #' dif_nopuri_2 <- rdif(x=est_par, data=data, score=NULL, 
 #'                      group=group, focal.name=1, D=1, alpha=0.05, 
 #'                      method="MLE")
-#' print(dif_nopuri_2$no_purify)
+#' print(dif_nopuri_2)
 #' 
 #' # (b)-1 compute RDIF statistics with a purification 
 #' #       based on \eqn{RDIF_{R}}
 #' dif_puri_r <- rdif(x=est_par, data=data, score=score, 
 #'                    group=group, focal.name=1, D=1, alpha=0.05, 
 #'                    purify=TRUE, purify.by="rdif_r")
-#' print(dif_puri_r$with_purify)
+#' print(dif_puri_r)
 #' 
 #' # (b)-2 compute RDIF statistics with a purification 
 #' #       based on \eqn{RDIF_{S}}
 #' dif_puri_s <- rdif(x=est_par, data=data, score=score, 
 #'                    group=group, focal.name=1, D=1, alpha=0.05, 
 #'                    purify=TRUE, purify.by="rdif_s")
-#' print(dif_puri_s$with_purify)
+#' print(dif_puri_s)
 #' 
 #' # (b)-3 compute RDIF statistics with a purification 
 #' #       based on \eqn{RDIF_{RS}}
 #' dif_puri_rs <- rdif(x=est_par, data=data, score=score, 
 #'                     group=group, focal.name=1, D=1, alpha=0.05, 
 #'                     purify=TRUE, purify.by="rdif_rs")
-#' print(dif_puri_rs$with_purify)
+#' print(dif_puri_rs)
 #' }
 #' 
 #' @export
@@ -280,19 +293,23 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
   dif_rst <- rdif_one(x=x, data=data, score=score, group=group, focal.name=focal.name, D=D, alpha=alpha)
   
   # create two empty lists to contain the results
-  no_purify <- list(dif_stat=NULL, effect_size=NULL, moments=NULL, dif_item=NULL)
-  with_purify <- list(purify.by=NULL, dif_stat=NULL, effect_size=NULL, moments=NULL, 
+  # no_purify <- list(dif_stat=NULL, effect_size=NULL, moments=NULL, dif_item=NULL)
+  # with_purify <- list(purify.by=NULL, dif_stat=NULL, effect_size=NULL, moments=NULL, 
+  #                     dif_item=NULL, n.iter=NULL, score=NULL, complete=NULL)
+  no_purify <- list(dif_stat=NULL, moments=NULL, dif_item=NULL, score=NULL)
+  with_purify <- list(purify.by=NULL, dif_stat=NULL, moments=NULL, 
                       dif_item=NULL, n.iter=NULL, score=NULL, complete=NULL)
   
   # record the first DIF detection results into the no purification list  
   no_purify$dif_stat <- dif_rst$dif_stat
-  no_purify$effect_size <- dif_rst$effect_size
+  # no_purify$effect_size <- dif_rst$effect_size
   no_purify$dif_item <- dif_rst$dif_item
   no_purify$moments <- data.frame(id=x$id, 
                                   dif_rst$moments$rdif_r[, c(1, 3)],
                                   dif_rst$moments$rdif_s[, c(1, 3)], 
                                   dif_rst$covariance, stringsAsFactors=FALSE)
   names(no_purify$moments) <- c("id", "mu.rdif_r", "sigma.rdif_r", "mu.rdif_s", "sigma.rdif_s", "covariance")
+  no_purify$score <- score
   
   # when purification is used
   if(purify) {
@@ -307,9 +324,9 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
       data.frame(id=rep(NA_character_, nrow(x)), rdif_r=NA, z.rdif_r=NA,
                  rdif_s=NA, z.rdif_s=NA, rdif_rs=NA, p.val.rdif_r=NA, p.val.rdif_s=NA, p.val.rdif_rs=NA, 
                  n.ref=NA, n.foc=NA, n.total=NA, n.iter=NA, stringsAsFactors=FALSE)
-    efs_df <- 
-      data.frame(id=rep(NA_character_, nrow(x)), he_rdif_r=NA, he_rdif_s=NA, 
-                 gl_rdif_r=NA, gl_rdif_s=NA, n.iter=NA, stringsAsFactors=FALSE)
+    # efs_df <- 
+    #   data.frame(id=rep(NA_character_, nrow(x)), he_rdif_r=NA, he_rdif_s=NA, 
+    #              gl_rdif_r=NA, gl_rdif_s=NA, n.iter=NA, stringsAsFactors=FALSE)
     mmt_df <- 
       data.frame(id=rep(NA_character_, nrow(x)), mu.rdif_r=NA, sigma.rdif_r=NA, 
                  mu.rdif_s=NA, sigma.rdif_s=NA, covariance=NA, n.iter=NA, stringsAsFactors=FALSE)
@@ -318,7 +335,7 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
     # and check if at least one DIF item is detected
     dif_item_tmp <- dif_rst$dif_item[[purify.by]]
     dif_stat_tmp <- dif_rst$dif_stat
-    efs_df_tmp <- dif_rst$effect_size
+    # efs_df_tmp <- dif_rst$effect_size
     mmt_df_tmp <- no_purify$moments
     
     # copy the response data and item meta data
@@ -364,8 +381,8 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
         # add the DIF statistics and moments for the detected DIF item
         dif_stat[del_item, 1:12] <- dif_stat_tmp[flag_max, ]
         dif_stat[del_item, 13] <- i - 1
-        efs_df[del_item, 1:5] <- efs_df_tmp[flag_max, ]
-        efs_df[del_item, 6] <- i - 1
+        # efs_df[del_item, 1:5] <- efs_df_tmp[flag_max, ]
+        # efs_df[del_item, 6] <- i - 1
         mmt_df[del_item, 1:6] <- mmt_df_tmp[flag_max, ]
         mmt_df[del_item, 7] <- i - 1
         
@@ -398,7 +415,7 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
         # and check if at least one DIF item is detected
         dif_item_tmp <- dif_rst_tmp$dif_item[[purify.by]]
         dif_stat_tmp <- dif_rst_tmp$dif_stat
-        efs_df_tmp <- dif_rst_tmp$effect_size
+        # efs_df_tmp <- dif_rst_tmp$effect_size
         mmt_df_tmp <- data.frame(id=dif_rst_tmp$dif_stat$id, 
                                  dif_rst_tmp$moments$rdif_r[, c(1, 3)],
                                  dif_rst_tmp$moments$rdif_s[, c(1, 3)], 
@@ -414,8 +431,8 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
           # add the DIF statistics for rest of items
           dif_stat[item_num, 1:12] <- dif_stat_tmp
           dif_stat[item_num, 13] <- i
-          efs_df[item_num, 1:5] <- efs_df_tmp
-          efs_df[item_num, 6] <- i
+          # efs_df[item_num, 1:5] <- efs_df_tmp
+          # efs_df[item_num, 6] <- i
           mmt_df[item_num, 1:6] <- mmt_df_tmp
           mmt_df[item_num, 7] <- i
           
@@ -444,8 +461,8 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
         # add the DIF statistics for rest of items
         dif_stat[item_num, 1:12] <- dif_stat_tmp
         dif_stat[item_num, 13] <- i
-        efs_df[item_num, 1:5] <- efs_df_tmp
-        efs_df[item_num, 6] <- i
+        # efs_df[item_num, 1:5] <- efs_df_tmp
+        # efs_df[item_num, 6] <- i
         mmt_df[item_num, 1:6] <- mmt_df_tmp
         mmt_df[item_num, 7] <- i
         
@@ -463,7 +480,7 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
       # record the final DIF detection results with the purification procedure
       with_purify$purify.by <- purify.by
       with_purify$dif_stat <- dif_stat
-      with_purify$effect_size <- efs_df
+      # with_purify$effect_size <- efs_df
       with_purify$moments <- mmt_df
       with_purify$dif_item <- sort(dif_item)
       with_purify$n.iter <- n_iter
@@ -475,7 +492,7 @@ rdif <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missin
       # in case when no DIF item is detected from the first DIF analysis results
       with_purify$purify.by <- purify.by
       with_purify$dif_stat <- cbind(no_purify$dif_stat, n.iter=0)
-      with_purify$effect_size <- cbind(no_purify$effect_size, n.iter=0)
+      # with_purify$effect_size <- cbind(no_purify$effect_size, n.iter=0)
       with_purify$moments <- cbind(no_purify$moments, n.iter=0)
       with_purify$n.iter <- 0
       with_purify$complete <- TRUE

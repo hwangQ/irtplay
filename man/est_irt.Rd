@@ -10,6 +10,7 @@ est_irt(
   D = 1,
   model = NULL,
   cats = NULL,
+  item.id = NULL,
   fix.a.1pl = FALSE,
   fix.a.gpcm = FALSE,
   fix.g = FALSE,
@@ -63,6 +64,9 @@ when \code{x = NULL} and \code{fipc = FALSE}.}
 item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If NULL and all items
 are binary items (i.e., dichotomous items), it assumes that all items have two score categories. This information is only required
 when \code{x = NULL} and \code{fipc = FALSE}.}
+
+\item{item.id}{A character vector of item IDs. If NULL, the item IDs are generated automatically. When \code{fipc = TRUE} and the Item IDs
+are given by the \code{item.id} argument, the Item IDs in the \code{x} argument are overridden. Default is NULL.}
 
 \item{fix.a.1pl}{A logical value. If TRUE, the slope parameters of the 1PLM items are fixed to a specific value specified in the argument
 \code{a.val.1pl}. Otherwise, the slope parameters of all 1PLM items are constrained to be equal and estimated. Default is FALSE.}
@@ -322,7 +326,7 @@ plot(trace.2pl, item.loc=1)
 # also use a less stringent convergence criterion for E-step
 (mod.2pl.hist <- est_irt(data=LSAT6, D=1, model="2PLM", cats=2, EmpHist=TRUE, Etol=0.001))
 (emphist <- getirt(mod.2pl.hist, what="weights"))
-plot(emphist$weight ~ emphist$theta)
+plot(emphist$weight ~ emphist$theta, type="h")
 
 # fit the 3PL model to LSAT6 data and use the Beta prior distribution for
 # the guessing parameters
@@ -419,7 +423,7 @@ summary(mod.mix2)
                      model=c(rep("2PLM", 38), rep("GPCM", 2), rep("2PLM", 12), rep("GRM", 3)),
                      cats=c(rep(2, 38), rep(5, 2), rep(2, 12), rep(5, 3)), EmpHist=TRUE))
 (emphist <- getirt(mod.mix3, what="weights"))
-plot(emphist$weight ~ emphist$theta)
+plot(emphist$weight ~ emphist$theta, type="h")
 
 # fit the 2PL model to all dichotomous items,
 # fit the PCM model to 39th and 40th items by fixing the slope parameters to 1,
@@ -461,7 +465,7 @@ fix.loc <- c(1:5, 53:55)
                      Etol=1e-3, fipc=TRUE, fipc.method="MEM", fix.loc=fix.loc))
 (prior.par <- mod.fix1$group.par)
 (emphist <- getirt(mod.fix1, what="weights"))
-plot(emphist$weight ~ emphist$theta)
+plot(emphist$weight ~ emphist$theta, type="h")
 
 # summary of the estimation
 summary(mod.fix1)
@@ -477,7 +481,7 @@ fix.loc <- c(1:5, 53:55)
                      Etol=1e-3, fipc=TRUE, fipc.method="MEM", fix.loc=fix.loc))
 (prior.par <- mod.fix2$group.par)
 (emphist <- getirt(mod.fix2, what="weights"))
-plot(emphist$weight ~ emphist$theta)
+plot(emphist$weight ~ emphist$theta, type="h")
 
 # fit the 3PL model to all dichotomous items, fit the GRM model to all polytomous data,
 # at this moment fix only the five 3PL items (1st - 5th items)
@@ -489,10 +493,23 @@ fix.loc <- c(1:5)
                      Etol=1e-3, fipc=TRUE, fipc.method="OEM", fix.loc=fix.loc))
 (prior.par <- mod.fix3$group.par)
 (emphist <- getirt(mod.fix3, what="weights"))
-plot(emphist$weight ~ emphist$theta)
+plot(emphist$weight ~ emphist$theta, type="h")
 
 # summary of the estimation
 summary(mod.fix3)
+
+# fit the 3PL model to all dichotomous items, fit the GRM model to all polytomous data,
+# at this moment fix all 55 items and estimate only the latent ability distribution 
+# using the MEM method.
+fix.loc <- c(1:55)
+(mod.fix4 <- est_irt(x=x, data=sim.dat2, D=1, EmpHist=TRUE,
+                     Etol=1e-3, fipc=TRUE, fipc.method="MEM", fix.loc=fix.loc))
+(prior.par <- mod.fix4$group.par)
+(emphist <- getirt(mod.fix4, what="weights"))
+plot(emphist$weight ~ emphist$theta, type="h")
+
+# summary of the estimation
+summary(mod.fix4)
 
 }
 

@@ -10,11 +10,11 @@ Description: Fit unidimensional item response theory (IRT) models to a mixture
     For the item parameter estimation, marginal maximum likelihood estimation 
     with expectation-maximization (MMLE-EM) algorithm 
     (Bock & Aitkin (1981) <doi:10.1007/BF02294168>) is used. 
-    For the online calibration, Stocking's Method A 
+    For the online calibration, the fixed item parameter calibration (FIPC) method 
+    (Kim (2006) <doi:10.1111/j.1745-3984.2006.00021.x>) and 
+    the fixed ability parameter calibration (FAPC) method
     (Ban, Hanson, Wang, Yi, & Harris (2011) <doi:10.1111/j.1745-3984.2001.tb01123.x>) 
-    and the fixed item parameter calibration (FIPC) method 
-    (Kim (2006) <doi:10.1111/j.1745-3984.2006.00021.x>) are provided. 
-    For the ability estimation, several popular scoring methods 
+    are provided. For the ability estimation, several popular scoring methods 
     (e.g., MLE, EAP, and MAP) are implemented. In terms of assessing the IRT 
     model-data fit, one of distinguished features of this package is that it 
     gives not only well-known item fit statistics (e.g., chi-square (X2), 
@@ -23,17 +23,17 @@ Description: Fit unidimensional item response theory (IRT) models to a mixture
     but also graphical displays to look at residuals between the observed 
     data and model-based predictions 
     (Hambleton, Swaminathan, & Rogers (1991, ISBN:9780803936478)). 
-    In addition, there are many useful functions such as computing asymptotic 
-    variance-covariance matrices of item parameter estimates (Li & Lissitz (2004) 
-    <doi:10.1111/j.1745-3984.2004.tb01109.x>), importing item and/or ability 
-    parameters from popular IRT software, running 'flexMIRT' (Cai, 2017) 
-    through R, generating simulated data, computing the conditional 
-    distribution of observed scores using the Lord-Wingersky recursion 
-    formula (Lord & Wingersky (1984) <doi:10.1177/014662168400800409>), 
-    computing the loglikelihood of individual items, computing the loglikelihood 
-    of abilities, computing item and test information functions, computing item 
-    and test characteristic curve functions, and plotting item and test 
-    characteristic curves and item and test information functions.
+    In addition, there are many useful functions such as analyzing differential item 
+    functioning (DIF), computing asymptotic variance-covariance matrices of item parameter 
+    estimates (Li & Lissitz (2004) <doi:10.1111/j.1745-3984.2004.tb01109.x>), 
+    importing item and/or ability parameters from popular IRT software, 
+    running 'flexMIRT' (Cai, 2017) through R, generating simulated data, 
+    computing the conditional distribution of observed scores using 
+    the Lord-Wingersky recursion formula (Lord & Wingersky (1984) 
+    <doi:10.1177/014662168400800409>), computing the loglikelihood of individual 
+    items, computing the loglikelihood of abilities, computing item and test 
+    information functions, computing item and test characteristic curve functions, 
+    and plotting item and test characteristic curves and item and test information functions.
 Depends: R (>= 3.6)
 License: GPL (>= 2)
 Encoding: UTF-8
@@ -57,3 +57,5 @@ Authors@R: c(person("Hwanggyu", "Lim", email="hglim83@gmail.com", role=c("aut", 
 RoxygenNote: 7.1.1
 Suggests: 
     mirt
+URL: https://github.com/hwangQ/irtplay
+BugReports: https://github.com/hwangQ/irtplay/issues    

@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_item.R
 \name{est_item}
 \alias{est_item}
-\title{Fixed effect item parameter calibration}
+\title{Fixed ability parameter calibration}
 \usage{
 est_item(
   x = NULL,
@@ -11,6 +11,7 @@ est_item(
   D = 1,
   model = NULL,
   cats = NULL,
+  item.id = NULL,
   fix.a.1pl = FALSE,
   fix.a.gpcm = FALSE,
   fix.g = FALSE,
@@ -56,6 +57,8 @@ when \code{x = NULL}.}
 item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If NULL and all items
 are binary items (i.e., dichotomous items), it assumes that all items have two score categories. This information is only required
 when \code{x = NULL}.}
+
+\item{item.id}{A character vector of item IDs. If NULL, the item IDs are generated automatically. Default is NULL.}
 
 \item{fix.a.1pl}{A logical value. If TRUE, the slope parameters of the 1PLM items are fixed to a specific value specified in the argument
 \code{a.val.1pl}. Otherwise, the slope parameters of all 1PLM items are constrained to be equal and estimated. Default is FALSE.}
@@ -139,14 +142,14 @@ when interpreting the variance-covariance matrix of item parameter estimates.}
 The internal objects can be easily extracted using the function \code{\link{getirt}}.
 }
 \description{
-This function performs the fixed effects (or fixed ability) item parameter calibration, called
-Method A (Stocking, 1988), which is the maximum likelihood estimation of item parameters given the ability
-estimates (Baker & Kim, 2004; Ban, Hanson, Wang, Yi, & Harris, 2001; Stocking, 1988). Also, this could be considered as a special
-type of the joint maximum likelihood estimation where only one cycle of parameter estimation is implemented
-given the ability estimates (Birnbaum, 1968). Method A is one of potentially useful online item calibration methods
-for computerized adaptive testing (CAT) to put the parameter estimates of pretest items on the same scale of
-operational item parameter estimates and recalibrate the operational items to evaluate the parameter drifts
-of the operational items (Chen & Wang, 2016; Stocking, 1988).
+This function performs the fixed ability parameter calibration (FAPC), often called
+Method A, which is the maximum likelihood estimation of item parameters given the ability
+estimates (Baker & Kim, 2004; Ban, Hanson, Wang, Yi, & Harris, 2001; Stocking, 1988). Also, this could be 
+considered as a special type of the joint maximum likelihood estimation where only one cycle of parameter 
+estimation is implemented given the ability estimates (Birnbaum, 1968). FAPC is one of potentially useful 
+online item calibration methods for computerized adaptive testing (CAT) to put the parameter estimates of 
+pretest items on the same scale of operational item parameter estimates and recalibrate the operational 
+items to evaluate the parameter drifts of the operational items (Chen & Wang, 2016; Stocking, 1988).
 }
 \details{
 In most cases, the function \code{\link{est_item}} will return successfully converged item parameter estimates using

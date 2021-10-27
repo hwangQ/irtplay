@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 
 The goal of `irtplay` is to fit unidimensional item response theory (IRT) models to mixture of dichotomous and polytomous data, calibrate online item parameters (i.e., pretest and operational items), estimate examinees abilities, and examine the IRT model-data fit on item-level in different ways as well as provide useful functions related to unidimensional IRT. 
 
-For the item parameter estimation, the marginal maximum likelihood estimation with expectation-maximization (MMLE-EM) algorithm (Bock & Aitkin, 1981) is used. For the online calibration, Stocking's Method A (Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988) and the fixed item parameter calibration (FIPC) method (Kim, 2006) are provided. For the ability estimation, several popular scoring methods (e.g., MLE, EAP, and MAP) are implemented. In terms of assessing the IRT model-data fit, one of distinguished features of this package is that it gives not only item fit statistics (e.g., chi-square fit statistic (X2; e.g., Bock, 1960; Yen, 1981), likelihood ratio chi-square fit statistic (G2; McKinley & Mills, 1985), infit and outfit statistics (Ames et al., 2015), and S-X2 (Orlando & Thissen, 2000, 2003)) but also graphical displays to look at residuals between the observed data and model-based predictions (Hambleton, Swaminathan, & Rogers, 1991). 
+For the item parameter estimation, the marginal maximum likelihood estimation with expectation-maximization (MMLE-EM) algorithm (Bock & Aitkin, 1981) is used. For the online calibration, the fixed item parameter calibration (FIPC) method (e.g., Kim, 2006) and the fixed ability parameter calibration (FAPC) method (Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988), often called Stocking's Method A, are provided. For the ability estimation, several popular scoring methods (e.g., MLE, EAP, and MAP) are implemented. In terms of assessing the IRT model-data fit, one of distinguished features of this package is that it gives not only item fit statistics (e.g., chi-square fit statistic (X2; e.g., Bock, 1960; Yen, 1981), likelihood ratio chi-square fit statistic (G2; McKinley & Mills, 1985), infit and outfit statistics (Ames et al., 2015), and S-X2 (Orlando & Thissen, 2000, 2003)) but also graphical displays to look at residuals between the observed data and model-based predictions (Hambleton, Swaminathan, & Rogers, 1991). 
 
-In addition, there are many useful functions such as computing asymptotic variance-covariance matrices of item parameter estimates, importing item and/or ability parameters from popular IRT software, running flexMIRT (Cai, 2017) through R, generating simulated data, computing the conditional distribution of observed scores using the Lord-Wingersky recursion formula, computing item and test information functions, computing item and test characteristic curve functions, and plotting item and test characteristic curves and item and test information functions.
+In addition, there are many useful functions such as analyzing differential item functioning (DIF), computing asymptotic variance-covariance matrices of item parameter estimates, importing item and/or ability parameters from popular IRT software, running flexMIRT (Cai, 2017) through R, generating simulated data, computing the conditional distribution of observed scores using the Lord-Wingersky recursion formula, computing item and test information functions, computing item and test characteristic curve functions, and plotting item and test characteristic curves and item and test information functions.
 
 
 ## Installation
@@ -28,6 +28,14 @@ You can install the released version of irtplay from [CRAN](https://CRAN.R-proje
 ``` r
 install.packages("irtplay")
 ```
+
+Or you can install the latest development version from Github using the *devtools* package:
+
+```R
+install.packages("devtools")
+devtools::install_github("hwangQ/irtplay")
+```
+
 
 ## 1. Online item calibration with the fixed item parameter calibration (FIPC) method (e.g., Kim, 2006)
 
@@ -62,12 +70,12 @@ In addition, if the response data include missing values, you must indicate the 
 Once the `est_irt()` function has been implemented, you'll get a list of several internal objects such as the item parameter estimates, standard error of the parameter estimates. 
 
 
-## 2. Online item calibration with Method A (Stocking, 1988)
+## 2. Online item calibration with the fixed ability parameter calibration method (e.g., Stocking, 1988)
 
-In CAT, Method A is the relatively simplest and most straightforward online calibration method, which is the maximum likelihood estimation of the item parameters given the proficiency estimates. In CAT, Method A can be used to put the parameter estimates of pretest items on the same scale of operational item parameter estimates and recalibrate the operational items to evaluate the parameter drifts of the operational items (Chen & Wang, 2016; Stocking, 1988). Also, Method A is known to result in accurate, unbiased item parameters calibration when items are randomly rather than adaptively administered to examinees, which occurs most commonly with pretest items (Ban et al., 2001; Chen & Wang, 2016). Using `irtplay` package, Method A is implemented to calibrate the items with two main steps:
+In CAT, the fixed ability parameter calibration (FAPC), often called Stocking's Method A, is the relatively simplest and most straightforward online calibration method, which is the maximum likelihood estimation of the item parameters given the proficiency estimates. In CAT, FAPC can be used to put the parameter estimates of pretest items on the same scale of operational item parameter estimates and recalibrate the operational items to evaluate the parameter drifts of the operational items (Chen & Wang, 2016; Stocking, 1988). Also, FAPC is known to result in accurate, unbiased item parameters calibration when items are randomly rather than adaptively administered to examinees, which occurs most commonly with pretest items (Ban et al., 2001; Chen & Wang, 2016). Using `irtplay` package, the FAPC is implemented to calibrate the items with two main steps:
 
   1. Prepare a data set for the calibration of item parameters (i.e., item response data and ability estimates).
-  2. Implement Method A to estimate the item parameters using the `est_item()` function.
+  2. Implement the FAPC to estimate the item parameters using the `est_item()` function.
 
 ### (1) Preparing a data set
 
@@ -134,9 +142,9 @@ In terms of the raw residual plot, the argument `ci.method` is used to select a 
 ## 3. Examples of implementing online calibration and evaluating the IRT model-data fit 
 
 
-```{r example, out.width="70%", out.height="50%", message = FALSE}
+```{r example, out.width="70%", out.height="50%", message = FALSE, tidy=TRUE, tidy.opts=list(arrow=TRUE, indent=2, width.cutoff=50)}
 
-library(irtplay)
+library("irtplay")
 
 ##----------------------------------------------------------------------------
 # 1. The example code below shows how to prepare the data sets and how to 
@@ -171,12 +179,13 @@ summary(mod.fix1)
 
 # plot the estimated empirical histogram of latent variable prior distribution  
 (emphist <- getirt(mod.fix1, what="weights"))
-plot(emphist$weight ~ emphist$theta, xlab="Theta", ylab="Density")
+plot(emphist$weight ~ emphist$theta, xlab="Theta", 
+     ylab="Density", type="h")
 
 
 ##----------------------------------------------------------------------------
 # 2. The example code below shows how to prepare the data sets and how to estimate 
-#    the item parameters using Method A:
+#    the item parameters using the FAPC:
 ##----------------------------------------------------------------------------
 
 ## Step 1: prepare a data set

@@ -1,11 +1,16 @@
 #' Plot Item and Test Information Functions
 #'
-#' @description This function plots item or test information function given a specified theta values.
+#' @description This function plots item or test information function given a specified theta values. In addition, 
+#' this function displays conditional standard errors at a test level.  
 #'
 #' @param x x An object of class \code{\link{test.info}}.
 #' @param item.loc A vector of numeric values indicating that the item information functions of the \emph{n}th items
 #' (or the location of items in a test form) are plotted. If NULL, the test information function for the total test form is drawn.
 #' Default is NULL.
+#' @param overlap Logical value indicating whether multiple item information functions are plotted in one panel. 
+#' If FALSE, multiple item information functions are displayed in multiple panels, one for each.  
+#' @param csee Logical value indicating whether the function displays the conditional standard error of estimation (CSEE) at a test level. 
+#' If FALSE, item/test information function is plotted. Note that the CSEE plot is displayed only at a test level.   
 #' @param xlab.text,ylab.text A title for the x and y axes.
 #' @param main.text An overall title for the plot.
 #' @param lab.size The size of xlab and ylab. Default is 15.
@@ -46,78 +51,129 @@
 #' # draw a plot of the item information function for the second item
 #' plot(x, item.loc=2)
 #'
-#' # draw a plot of the item information function for the mutiple items
-#' plot(x, item.loc=1:8)
+#' # draw a plot of multiple item information functions across the multiple panels
+#' plot(x, item.loc=1:8, overlap=FALSE)
+#' 
+#' # draw a plot of multiple item information functions across in one panel
+#' plot(x, item.loc=1:8, overlap=TRUE)
 #'
+#' # draw a plot of conditional standard error at a test level
+#' plot(x, csee=TRUE)
 #'
-#' @import ggplot2
+#' @import ggplot2 dplyr
 #' @importFrom reshape2 melt
 #' @importFrom rlang .data
 #' @export
-plot.test.info <- function(x, item.loc=NULL, xlab.text, ylab.text, main.text, lab.size=15, main.size=15,
-                           axis.size=15, line.color, line.size=1, layout.col=4, strip.size=12, ...) {
-
-
-  # 1. plot test infomation
-  if(is.null(item.loc)) {
-
+plot.test.info <- function(x, item.loc=NULL, overlap=FALSE, csee=FALSE, xlab.text, ylab.text, main.text, 
+                           lab.size=15, main.size=15, axis.size=15, line.color, line.size=1, layout.col=4,
+                           strip.size=12, ...) {
+  
+  if(!csee) {
+    
+    # 1. plot test infomation
+    if(is.null(item.loc)) {
+      
+      # data manipulation for plotting
+      df_info <- data.frame(theta=x$theta, info = x$testInfo) 
+      
+      # plot
+      # Set plot conditions
+      if(missing(xlab.text)) xlab.text <- expression(theta)
+      if(missing(ylab.text)) ylab.text <- 'Information'
+      if(missing(main.text)) main.text <- 'Test Information'
+      if(missing(line.color)) line.color <- "#F8766D" else line.color <- line.color
+      
+      # draw a plot
+      p <- 
+        df_info %>% 
+        ggplot2::ggplot(mapping=ggplot2::aes_string(x="theta", y="info")) +
+        ggplot2::geom_line(size=line.size, color=line.color, ...) +
+        ggplot2::theme_bw() +
+        ggplot2::labs(title = main.text, x = xlab.text, y = ylab.text) +
+        ggplot2::theme(plot.title = ggplot2::element_text(size=main.size),
+                       axis.title = ggplot2::element_text(size=lab.size),
+                       axis.text = ggplot2::element_text(size=axis.size))
+      
+    }
+    
+    # 2. plot item information
+    if(!is.null(item.loc)) {
+      
+      # data manipulation for plotting
+      df_info <- 
+        data.frame(t(x$itemInfo[item.loc, , drop=FALSE]), theta=x$theta) %>%
+        # stats::setNames(nm=c(1:nrow(x$itemInfo), "theta")) %>%
+        reshape2::melt(variable.name="item", id.vars="theta", value.name="info")
+      # df_info$item <- as.numeric(df_info$item)
+      # df_info <- dplyr::filter(df_info, .data$item %in% item.loc)
+      
+      # plot
+      # Set plot conditions
+      if(missing(xlab.text)) xlab.text <- expression(theta)
+      if(missing(ylab.text)) ylab.text <- 'Information'
+      if(length(item.loc) == 1) {
+        if(missing(main.text)) main.text <- paste0('Item Information: ', unique(df_info$item))        
+      } else if(length(item.loc) > 1) {
+        if(missing(main.text)) main.text <- 'Item Information'
+      }
+      if(missing(line.color)) line.color <- "#F8766D" else line.color <- line.color
+      
+      if(!overlap) {
+        p <- 
+          df_info %>% 
+          ggplot2::ggplot(mapping=ggplot2::aes_string(x="theta", y="info")) +
+          ggplot2::geom_line(size=line.size, color=line.color, ...) +
+          ggplot2::theme_bw() +
+          ggplot2::labs(title = main.text, x = xlab.text, y = ylab.text) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size=main.size),
+                         axis.title = ggplot2::element_text(size=lab.size),
+                         axis.text = ggplot2::element_text(size=axis.size)) +
+          ggplot2::facet_wrap(~item, ncol=layout.col) +
+          ggplot2::theme(strip.text.x = ggplot2::element_text(size = strip.size, face = 'bold'))
+      } else {
+        p <- 
+          df_info %>% 
+          dplyr::rename("Item"="item") %>% 
+          dplyr::mutate_at(.vars="Item", as.factor) %>% 
+          ggplot2::ggplot(mapping=ggplot2::aes_string(x="theta", y="info")) +
+          ggplot2::geom_line(mapping=ggplot2::aes_string(color="Item"), size=line.size, ...) +
+          ggplot2::theme_bw() +
+          ggplot2::labs(title = main.text, x = xlab.text, y = ylab.text) +
+          ggplot2::theme(plot.title = ggplot2::element_text(size=main.size),
+                         axis.title = ggplot2::element_text(size=lab.size),
+                         axis.text = ggplot2::element_text(size=axis.size))
+      }
+      
+    }
+    
+  } else {
+    
+    # Plot only test level csee infomation
     # data manipulation for plotting
-    df_info <- data.frame(theta=x$theta, info = x$testInfo)
-
+    df_csee <- data.frame(theta=x$theta, csee = 1/sqrt(x$testInfo))
+    
     # plot
     # Set plot conditions
     if(missing(xlab.text)) xlab.text <- expression(theta)
-    if(missing(ylab.text)) ylab.text <- 'Information'
-    if(missing(main.text)) main.text <- 'Test Information'
+    if(missing(ylab.text)) ylab.text <- 'Standard Error'
+    if(missing(main.text)) main.text <- 'Conditional Standard Error of Estimation'
     if(missing(line.color)) line.color <- "#F8766D" else line.color <- line.color
-
+    
     # draw a plot
     p <- 
-      df_info %>% 
-      ggplot(mapping=aes_string(x="theta", y="info")) +
-      geom_line(size=line.size, color=line.color, ...) +
-      ggplot2::theme_bw() +
-      labs(title = main.text, x = xlab.text, y = ylab.text) +
-      theme(plot.title = element_text(size=main.size),
-            axis.title = element_text(size=lab.size),
-            axis.text = element_text(size=axis.size))
-
-  }
-
-  # 2. plot item information
-  if(!is.null(item.loc)) {
-
-    # data manipulation for plotting
-    df_info <- 
-      data.frame(t(x$itemInfo), theta=x$theta) %>%
-      stats::setNames(nm=c(1:nrow(x$itemInfo), "theta")) %>%
-      reshape2::melt(variable.name="item", id.vars="theta", value.name="info")
-    df_info$item <- as.numeric(df_info$item)
-    df_info <- dplyr::filter(df_info, .data$item %in% item.loc)
-
-    # plot
-    # Set plot conditions
-    if(missing(xlab.text)) xlab.text <- expression(theta)
-    if(missing(ylab.text)) ylab.text <- 'Information'
-    if(missing(main.text)) main.text <- 'Item Information'
-    if(missing(line.color)) line.color <- "#F8766D" else line.color <- line.color
-
-    p <- 
-      df_info %>% 
-      ggplot2::ggplot(mapping=aes_string(x="theta", y="info")) +
+      df_csee %>% 
+      ggplot2::ggplot(mapping=ggplot2::aes_string(x="theta", y="csee")) +
       ggplot2::geom_line(size=line.size, color=line.color, ...) +
       ggplot2::theme_bw() +
-      labs(title = main.text, x = xlab.text, y = ylab.text) +
-      theme(plot.title = element_text(size=main.size),
-            axis.title = element_text(size=lab.size),
-            axis.text = element_text(size=axis.size)) +
-      facet_wrap(~item, ncol=layout.col) +
-      theme(strip.text.x = element_text(size = strip.size, face = 'bold'))
-
+      ggplot2::labs(title = main.text, x = xlab.text, y = ylab.text) +
+      ggplot2::theme(plot.title = ggplot2::element_text(size=main.size),
+                     axis.title = ggplot2::element_text(size=lab.size),
+                     axis.text = ggplot2::element_text(size=axis.size))
+    
   }
-
+  
   p
-
+  
 }
 
 

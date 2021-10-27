@@ -1,4 +1,102 @@
 #' @export
+print.rdif <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
+  
+  call.expr <- deparse(x$call)
+  cat("\nCall:\n", paste(call.expr, sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+  
+  # re-organize the dit stats data.frame
+  dif_stat_nopurify <- 
+    x$no_purify$dif_stat %>% 
+    dplyr::select(.data$id, .data$n.ref, .data$n.foc, .data$rdif_r, 
+                  .data$p.val.rdif_r, .data$rdif_s, .data$p.val.rdif_s, 
+                  .data$rdif_rs, .data$p.val.rdif_rs) %>% 
+    dplyr::mutate_at(.vars = 4:9, round, digits = 3) %>% 
+    dplyr::mutate(" "=stats::symnum(.data$p.val.rdif_r, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                    symbols = c("***", "**", "*", ".", "")), 
+                  "  "=stats::symnum(.data$p.val.rdif_s, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                     symbols = c("***", "**", "*", ".", "")), 
+                  "   "=stats::symnum(.data$p.val.rdif_rs, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                      symbols = c("***", "**", "*", ".", ""))) %>% 
+    dplyr::relocate(" ", .after=.data$p.val.rdif_r) %>% 
+    dplyr::relocate("  ", .after=.data$p.val.rdif_s) %>% 
+    dplyr::relocate("   ", .after=.data$p.val.rdif_rs) 
+  
+  # check if purification is used
+  purify <- x$purify
+  if(purify) {
+    purify.by <- x$with_purify$purify.by
+    complete <- x$with_purify$complete
+    n.iter <- x$with_purify$n.iter
+    if(purify.by == "rdif_r") {
+      purify.stat <- "RDIF(R)"
+    }
+    if(purify.by == "rdif_s") {
+      purify.stat <- "RDIF(S)"
+    }
+    if(purify.by == "rdif_rs") {
+      purify.stat <- "RDIF(RS)"
+    }
+    
+    # re-organize the dit stats data.frame
+    dif_stat_purify <- 
+      x$with_purify$dif_stat %>% 
+      dplyr::select(.data$id, .data$n.iter, .data$n.ref, .data$n.foc, 
+                    .data$rdif_r, .data$p.val.rdif_r, .data$rdif_s, .data$p.val.rdif_s, 
+                    .data$rdif_rs, .data$p.val.rdif_rs) %>% 
+      dplyr::mutate_at(.vars = 5:10, round, digits = 3) %>% 
+      dplyr::mutate(" "=stats::symnum(.data$p.val.rdif_r, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                      symbols = c("***", "**", "*", ".", "")), 
+                    "  "=stats::symnum(.data$p.val.rdif_s, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                       symbols = c("***", "**", "*", ".", "")), 
+                    "   "=stats::symnum(.data$p.val.rdif_rs, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                        symbols = c("***", "**", "*", ".", ""))) %>% 
+      dplyr::relocate(" ", .after=.data$p.val.rdif_r) %>% 
+      dplyr::relocate("  ", .after=.data$p.val.rdif_s) %>% 
+      dplyr::relocate("   ", .after=.data$p.val.rdif_rs) 
+    
+  }
+  
+  ## print the results 
+  cat("DIF analysis using three RDIF statistics", "\n\n")
+  
+  cat(" 1. Without purification \n\n")
+  cat("  - DIF Items identified by RDIF(R): \n")
+  cat("   ", paste(x$no_purify$dif_item$rdif_r, collapse=", "), "\n")
+  cat("  - DIF Items identified by RDIF(S): \n")
+  cat("   ", paste(x$no_purify$dif_item$rdif_s, collapse=", "), "\n")
+  cat("  - DIF Items identified by RDIF(RS): \n")
+  cat("   ", paste(x$no_purify$dif_item$rdif_rs, collapse=", "), "\n")
+  cat("  - RDIF Statistics: \n\n")
+  print(dif_stat_nopurify, digits=3, print.gap=NULL, quote=FALSE)
+  cat("\n")
+  cat("'***'p < 0.001 '**'p < 0.01 '*'p < 0.05 '.'p < 0.1 ' 'p < 1 ", 
+      "\n")
+  cat("Significance level:", x$alpha, "\n\n\n")
+  
+  cat(" 2. With purification \n\n")
+  if(!purify) {
+    cat("  - Purification was not implemented.", "\n\n")
+  } else {
+    cat("  - Completion of purification: ", complete,  "\n", sep="")
+    cat("  - Number of iterations: ", n.iter,  "\n", sep="")
+    cat("  - RDIF statistic used for purification: ", purify.stat, "\n", sep="")
+    cat("  - DIF Items identified by ", purify.stat, " : \n", sep="")
+    cat("   ", paste(x$with_purify$dif_item , collapse=", "), "\n")
+    cat("  - RDIF Statistics: \n\n")
+    print(dif_stat_purify, digits=3, print.gap=NULL, quote=FALSE)
+    cat("\n")
+    cat("'***'p < 0.001 '**'p < 0.01 '*'p < 0.05 '.'p < 0.1 ' 'p < 1 ", 
+        "\n")
+    cat("Significance level:", x$alpha, "\n\n")
+  }
+  
+  invisible(x)
+  
+}
+
+
+#' @export
 print.irtfit <- function(x, ...) {
 
   call.expr <- deparse(x$call)
@@ -86,7 +184,7 @@ print.est_item <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
   cat("\nCall:\n", paste(call.expr, sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
 
-  cat("Item calibration using Method-A. \n")
+  cat("Fixed ability parameter calibration (Stocking's Method A). \n")
   cat(x$convergence, "\n\n")
   cat("Log-likelihood: ", (x$loglikelihood), "\n", sep="")
 

@@ -12,37 +12,46 @@ unidimensional IRT.
 
 For the item parameter estimation, the marginal maximum likelihood
 estimation with expectation-maximization (MMLE-EM) algorithm (Bock &
-Aitkin, 1981) is used. For the online calibration, Stocking’s Method A
-(Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988) and the fixed
-item parameter calibration (FIPC) method (Kim, 2006) are provided. For
-the ability estimation, several popular scoring methods (e.g., MLE, EAP,
-and MAP) are implemented. In terms of assessing the IRT model-data fit,
-one of distinguished features of this package is that it gives not only
-item fit statistics (e.g., chi-square fit statistic (X2; e.g., Bock,
-1960; Yen, 1981), likelihood ratio chi-square fit statistic (G2;
-McKinley & Mills, 1985), infit and outfit statistics (Ames et al.,
+Aitkin, 1981) is used. For the online calibration, the fixed item
+parameter calibration (FIPC) method (e.g., Kim, 2006) and the fixed
+ability parameter calibration (FAPC) method (Ban, Hanson, Wang, Yi, &
+Harris, 2001; stocking, 1988), often called Stocking’s Method A, are
+provided. For the ability estimation, several popular scoring methods
+(e.g., MLE, EAP, and MAP) are implemented. In terms of assessing the IRT
+model-data fit, one of distinguished features of this package is that it
+gives not only item fit statistics (e.g., chi-square fit statistic (X2;
+e.g., Bock, 1960; Yen, 1981), likelihood ratio chi-square fit statistic
+(G2; McKinley & Mills, 1985), infit and outfit statistics (Ames et al.,
 2015), and S-X2 (Orlando & Thissen, 2000, 2003)) but also graphical
 displays to look at residuals between the observed data and model-based
 predictions (Hambleton, Swaminathan, & Rogers, 1991).
 
-In addition, there are many useful functions such as computing
-asymptotic variance-covariance matrices of item parameter estimates,
-importing item and/or ability parameters from popular IRT software,
-running flexMIRT (Cai, 2017) through R, generating simulated data,
-computing the conditional distribution of observed scores using the
-Lord-Wingersky recursion formula, computing item and test information
-functions, computing item and test characteristic curve functions, and
-plotting item and test characteristic curves and item and test
-information functions.
+In addition, there are many useful functions such as analyzing
+differential item functioning (DIF), computing asymptotic
+variance-covariance matrices of item parameter estimates, importing item
+and/or ability parameters from popular IRT software, running flexMIRT
+(Cai, 2017) through R, generating simulated data, computing the
+conditional distribution of observed scores using the Lord-Wingersky
+recursion formula, computing item and test information functions,
+computing item and test characteristic curve functions, and plotting
+item and test characteristic curves and item and test information
+functions.
 
 ## Installation
 
 You can install the released version of irtplay from
-[CRAN](https://CRAN.R-project.org)
-with:
+[CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("irtplay")
+```
+
+Or you can install the latest development version from Github using the
+*devtools* package:
+
+``` r
+install.packages("devtools")
+devtools::install_github("hwangQ/irtplay")
 ```
 
 ## 1\. Online item calibration with the fixed item parameter calibration (FIPC) method (e.g., Kim, 2006)
@@ -132,24 +141,25 @@ Once the `est_irt()` function has been implemented, you’ll get a list of
 several internal objects such as the item parameter estimates, standard
 error of the parameter estimates.
 
-## 2\. Online item calibration with Method A (Stocking, 1988)
+## 2\. Online item calibration with the fixed ability parameter calibration method (e.g., Stocking, 1988)
 
-In CAT, Method A is the relatively simplest and most straightforward
+In CAT, the fixed ability parameter calibration (FAPC), often called
+Stocking’s Method A, is the relatively simplest and most straightforward
 online calibration method, which is the maximum likelihood estimation of
-the item parameters given the proficiency estimates. In CAT, Method A
-can be used to put the parameter estimates of pretest items on the same
-scale of operational item parameter estimates and recalibrate the
-operational items to evaluate the parameter drifts of the operational
-items (Chen & Wang, 2016; Stocking, 1988). Also, Method A is known to
-result in accurate, unbiased item parameters calibration when items are
-randomly rather than adaptively administered to examinees, which occurs
-most commonly with pretest items (Ban et al., 2001; Chen & Wang, 2016).
-Using `irtplay` package, Method A is implemented to calibrate the items
-with two main steps:
+the item parameters given the proficiency estimates. In CAT, FAPC can be
+used to put the parameter estimates of pretest items on the same scale
+of operational item parameter estimates and recalibrate the operational
+items to evaluate the parameter drifts of the operational items (Chen &
+Wang, 2016; Stocking, 1988). Also, FAPC is known to result in accurate,
+unbiased item parameters calibration when items are randomly rather than
+adaptively administered to examinees, which occurs most commonly with
+pretest items (Ban et al., 2001; Chen & Wang, 2016). Using `irtplay`
+package, the FAPC is implemented to calibrate the items with two main
+steps:
 
 1.  Prepare a data set for the calibration of item parameters (i.e.,
     item response data and ability estimates).
-2.  Implement Method A to estimate the item parameters using the
+2.  Implement the FAPC to estimate the item parameters using the
     `est_item()` function.
 
 ### (1) Preparing a data set
@@ -288,49 +298,52 @@ Those methods are “wald” for the Wald interval, which is based on the
 normal approximation (Laplace, 1812), “cp” for Clopper-Pearson interval
 (Clopper & Pearson, 1934), “wilson” for Wilson score interval (Wilson,
 1927), and “wilson.cr” for Wilson score interval with continuity
-correction (Newcombe,
-1998).
+correction (Newcombe, 1998).
 
 ## 3\. Examples of implementing online calibration and evaluating the IRT model-data fit
 
 ``` r
-
-library(irtplay)
+library("irtplay")
 
 ##----------------------------------------------------------------------------
-# 1. The example code below shows how to prepare the data sets and how to 
-#    implement the fixed item parameter calibration (FIPC):
+# 1. The example code below shows how to prepare
+# the data sets and how to implement the fixed
+# item parameter calibration (FIPC):
 ##----------------------------------------------------------------------------
 
-## Step 1: prepare a data set
-## In this example, we generated examinees' true proficiency parameters and simulated 
-## the item response data using the function "simdat".  
+## Step 1: prepare a data set In this example, we
+## generated examinees' true proficiency
+## parameters and simulated the item response
+## data using the function 'simdat'.
 
-## import the "-prm.txt" output file from flexMIRT
-flex_sam <- system.file("extdata", "flexmirt_sample-prm.txt", package = "irtplay")
+## import the '-prm.txt' output file from
+## flexMIRT
+flex_sam <- system.file("extdata", "flexmirt_sample-prm.txt",
+  package = "irtplay")
 
 # select the item metadata
-x <- bring.flexmirt(file=flex_sam, "par")$Group1$full_df
+x <- bring.flexmirt(file = flex_sam, "par")$Group1$full_df
 
-# generate 1,000 examinees' latent abilities from N(0.4, 1.3)
+# generate 1,000 examinees' latent abilities from
+# N(0.4, 1.3)
 set.seed(20)
-score <- rnorm(1000, mean=0.4, sd=1.3)
+score <- rnorm(1000, mean = 0.4, sd = 1.3)
 
 # simulate the response data
-sim.dat <- simdat(x=x, theta=score, D=1)
+sim.dat <- simdat(x = x, theta = score, D = 1)
 
-## Step 2: Estimate the item parameters
-# fit the 3PL model to all dichotmous items, fit the GRM model to all polytomous data,
-# fix the five 3PL items (1st - 5th items) and three GRM items (53th to 55th items)
-# also, estimate the empirical histogram of latent variable
+## Step 2: Estimate the item parameters fit the
+## 3PL model to all dichotmous items, fit the GRM
+## model to all polytomous data, fix the five 3PL
+## items (1st - 5th items) and three GRM items
+## (53th to 55th items) also, estimate the
+## empirical histogram of latent variable
 fix.loc <- c(1:5, 53:55)
-(mod.fix1 <- est_irt(x=x, data=sim.dat, D=1, use.gprior=TRUE, gprior=list(dist="beta", params=c(5, 16)),
-                    EmpHist=TRUE, Etol=1e-3, fipc=TRUE, fipc.method="MEM", fix.loc=fix.loc, verbose=FALSE))
-#> Parsing input... 
-#> Estimating item parameters... 
-#>  
-#> Computing item parameter var-covariance matrix... 
-#> Estimation is finished in 4.54 seconds.
+(mod.fix1 <- est_irt(x = x, data = sim.dat, D = 1,
+  use.gprior = TRUE, gprior = list(dist = "beta",
+    params = c(5, 16)), EmpHist = TRUE, Etol = 0.001,
+  fipc = TRUE, fipc.method = "MEM", fix.loc = fix.loc,
+  verbose = FALSE))
 #> 
 #> Call:
 #> est_irt(x = x, data = sim.dat, D = 1, use.gprior = TRUE, gprior = list(dist = "beta", 
@@ -367,9 +380,9 @@ summary(mod.fix1)
 #>  Maximum parameter change: 0.0009203804
 #> 
 #> Processing time (in seconds) 
-#>  EM algorithm: 2.96
-#>  Standard error computation: 1.3
-#>  Total computation: 4.54
+#>  EM algorithm: 2.93
+#>  Standard error computation: 1.16
+#>  Total computation: 4.33
 #> 
 #> Convergence and Stability of Solution 
 #>  First-order test: Convergence criteria are satisfied.
@@ -498,9 +511,9 @@ summary(mod.fix1)
 #>              mu  sigma2  sigma
 #> estimates  0.40    1.88   1.37
 #> se         0.04    0.08   0.03
-
-# plot the estimated empirical histogram of latent variable prior distribution  
-(emphist <- getirt(mod.fix1, what="weights"))
+# plot the estimated empirical histogram of
+# latent variable prior distribution
+(emphist <- getirt(mod.fix1, what = "weights"))
 #>    theta       weight
 #> 1  -6.00 2.301252e-10
 #> 2  -5.75 1.434595e-09
@@ -551,32 +564,37 @@ summary(mod.fix1)
 #> 47  5.50 6.557355e-04
 #> 48  5.75 4.168380e-04
 #> 49  6.00 2.220842e-04
-plot(emphist$weight ~ emphist$theta, xlab="Theta", ylab="Density")
+plot(emphist$weight ~ emphist$theta, xlab = "Theta",
+  ylab = "Density", type = "h")
 ```
 
 <img src="man/figures/README-example-1.png" width="70%" height="50%" />
 
 ``` r
-
-
 ##----------------------------------------------------------------------------
-# 2. The example code below shows how to prepare the data sets and how to estimate 
-#    the item parameters using Method A:
+# 2. The example code below shows how to prepare
+# the data sets and how to estimate the item
+# parameters using the FAPC:
 ##----------------------------------------------------------------------------
 
-## Step 1: prepare a data set
-## In this example, we generated examinees' true proficiency parameters and simulated 
-## the item response data using the function "simdat". Because the true 
-## proficiency parameters are not known in reality, the true proficiencies  
-## would be replaced with the proficiency estimates for the calibration. 
+## Step 1: prepare a data set In this example, we
+## generated examinees' true proficiency
+## parameters and simulated the item response
+## data using the function 'simdat'. Because the
+## true proficiency parameters are not known in
+## reality, the true proficiencies would be
+## replaced with the proficiency estimates for
+## the calibration.
 
-# import the "-prm.txt" output file from flexMIRT
-flex_sam <- system.file("extdata", "flexmirt_sample-prm.txt", package = "irtplay")
+# import the '-prm.txt' output file from flexMIRT
+flex_sam <- system.file("extdata", "flexmirt_sample-prm.txt",
+  package = "irtplay")
 
 # select the item metadata
-x <- bring.flexmirt(file=flex_sam, "par")$Group1$full_df
+x <- bring.flexmirt(file = flex_sam, "par")$Group1$full_df
 
-# modify the item metadata so that some items follow 1PLM, 2PLM and GPCM
+# modify the item metadata so that some items
+# follow 1PLM, 2PLM and GPCM
 x[c(1:3, 5), 3] <- "1PLM"
 x[c(1:3, 5), 4] <- 1
 x[c(1:3, 5), 6] <- 0
@@ -586,15 +604,17 @@ x[54:55, 3] <- "GPCM"
 
 # generate examinees' abilities from N(0, 1)
 set.seed(23)
-score <- rnorm(500, mean=0, sd=1)
+score <- rnorm(500, mean = 0, sd = 1)
 
 # simulate the response data
-data <- simdat(x=x, theta=score, D=1)
+data <- simdat(x = x, theta = score, D = 1)
 
-## Step 2: Estimate the item parameters
-# 1) item parameter estimation: constrain the slope parameters of the 1PLM to be equal
-(mod1 <- est_item(x, data, score, D=1, fix.a.1pl=FALSE, use.gprior=TRUE,
-                  gprior=list(dist="beta", params=c(5, 17)), use.startval=FALSE))
+## Step 2: Estimate the item parameters 1) item
+## parameter estimation: constrain the slope
+## parameters of the 1PLM to be equal
+(mod1 <- est_item(x, data, score, D = 1, fix.a.1pl = FALSE,
+  use.gprior = TRUE, gprior = list(dist = "beta",
+    params = c(5, 17)), use.startval = FALSE))
 #> Starting... 
 #> Parsing input... 
 #> Estimating item parameters... 
@@ -605,7 +625,7 @@ data <- simdat(x=x, theta=score, D=1)
 #>     use.gprior = TRUE, gprior = list(dist = "beta", params = c(5, 
 #>         17)), use.startval = FALSE)
 #> 
-#> Item calibration using Method-A. 
+#> Fixed ability parameter calibration (Stocking's Method A). 
 #> All item parameters were successfully converged. 
 #> 
 #> Log-likelihood: -15830.66
@@ -679,7 +699,7 @@ summary(mod1)
 #> 55   AFR3  500
 #> 
 #> Processing time (in seconds) 
-#>  Total computation: 0.94
+#>  Total computation: 0.96
 #> 
 #> Convergence of Solution 
 #>  All item parameters were successfully converged.
@@ -803,10 +823,11 @@ summary(mod1)
 #>  Group Parameters: 
 #>    mu  sigma  
 #>  0.03   1.02
-
-# 2) item parameter estimation: fix the slope parameters of the 1PLM to 1
-(mod2 <- est_item(x, data, score, D=1, fix.a.1pl=TRUE, a.val.1pl=1, use.gprior=TRUE,
-                  gprior=list(dist="beta", params=c(5, 17)), use.startval=FALSE))
+# 2) item parameter estimation: fix the slope
+# parameters of the 1PLM to 1
+(mod2 <- est_item(x, data, score, D = 1, fix.a.1pl = TRUE,
+  a.val.1pl = 1, use.gprior = TRUE, gprior = list(dist = "beta",
+    params = c(5, 17)), use.startval = FALSE))
 #> Starting... 
 #> Parsing input... 
 #> Estimating item parameters... 
@@ -817,7 +838,7 @@ summary(mod1)
 #>     a.val.1pl = 1, use.gprior = TRUE, gprior = list(dist = "beta", 
 #>         params = c(5, 17)), use.startval = FALSE)
 #> 
-#> Item calibration using Method-A. 
+#> Fixed ability parameter calibration (Stocking's Method A). 
 #> All item parameters were successfully converged. 
 #> 
 #> Log-likelihood: -15830.7
@@ -891,7 +912,7 @@ summary(mod2)
 #> 55   AFR3  500
 #> 
 #> Processing time (in seconds) 
-#>  Total computation: 0.95
+#>  Total computation: 0.92
 #> 
 #> Convergence of Solution 
 #>  All item parameters were successfully converged.
@@ -1015,10 +1036,10 @@ summary(mod2)
 #>  Group Parameters: 
 #>    mu  sigma  
 #>  0.03   1.02
-
-# 3) item parameter estimation: fix the guessing parameters of the 3PLM to 0.2
-(mod3 <- est_item(x, data, score, D=1, fix.a.1pl=TRUE, fix.g=TRUE, a.val.1pl=1, g.val=.2,
-                  use.startval=FALSE))
+# 3) item parameter estimation: fix the guessing
+# parameters of the 3PLM to 0.2
+(mod3 <- est_item(x, data, score, D = 1, fix.a.1pl = TRUE,
+  fix.g = TRUE, a.val.1pl = 1, g.val = 0.2, use.startval = FALSE))
 #> Starting... 
 #> Parsing input... 
 #> Estimating item parameters... 
@@ -1028,7 +1049,7 @@ summary(mod2)
 #> est_item(x = x, data = data, score = score, D = 1, fix.a.1pl = TRUE, 
 #>     fix.g = TRUE, a.val.1pl = 1, g.val = 0.2, use.startval = FALSE)
 #> 
-#> Item calibration using Method-A. 
+#> Fixed ability parameter calibration (Stocking's Method A). 
 #> All item parameters were successfully converged. 
 #> 
 #> Log-likelihood: -15916.26
@@ -1101,7 +1122,7 @@ summary(mod3)
 #> 55   AFR3  500
 #> 
 #> Processing time (in seconds) 
-#>  Total computation: 0.77
+#>  Total computation: 0.72
 #> 
 #> Convergence of Solution 
 #>  All item parameters were successfully converged.
@@ -1225,19 +1246,21 @@ summary(mod3)
 #>  Group Parameters: 
 #>    mu  sigma  
 #>  0.03   1.02
-
-
 ##----------------------------------------------------------------------------
-# 3. The example code below shows how to prepare the data sets and how to conduct 
-#    the IRT model-data fit analysis:
+# 3. The example code below shows how to prepare
+# the data sets and how to conduct the IRT
+# model-data fit analysis:
 ##----------------------------------------------------------------------------
 
-## Step 1: prepare a data set for IRT
-## In this example, we use the simulated mixed-item format CAT Data
-## But, only items that have item responses more than 1,000 are assessed.
+## Step 1: prepare a data set for IRT In this
+## example, we use the simulated mixed-item
+## format CAT Data But, only items that have item
+## responses more than 1,000 are assessed.
 
-# find the location of items that have more than 1,000 item responses
-over1000 <- which(colSums(simCAT_MX$res.dat, na.rm=TRUE) > 1000)
+# find the location of items that have more than
+# 1,000 item responses
+over1000 <- which(colSums(simCAT_MX$res.dat, na.rm = TRUE) >
+  1000)
 
 # (1) item metadata
 x <- simCAT_MX$item.prm[over1000, ]
@@ -1255,7 +1278,6 @@ print(x[1:10, ])
 #> 11 V11    2  2PLM 1.4413208  1.2276303    NA    NA
 #> 12 V12    2  2PLM 1.2077273 -0.8017795    NA    NA
 #> 13 V13    2  2PLM 1.1715456 -1.0803926    NA    NA
-
 # (2) examinee's ability estimates
 score <- simCAT_MX$score
 length(score)
@@ -1278,7 +1300,6 @@ print(score[1:100])
 #>  [85]  0.60682182  0.65415304 -0.69923141  1.07545766  0.24060267 -0.93542383
 #>  [91]  1.24988766 -0.01826940  1.27403936  0.10985621 -1.19092047  0.79614598
 #>  [97]  0.62302338 -0.89455596 -0.03472720  0.20250837
-
 # (3) response data
 data <- simCAT_MX$res.dat[, over1000]
 dim(data)
@@ -1305,19 +1326,18 @@ print(data[1:20, 1:6])
 #> [18,]        NA        NA        NA        NA        NA        NA
 #> [19,]        NA         0        NA         0         1         1
 #> [20,]        NA        NA        NA        NA        NA        NA
+## Step 2: Compute the IRT mode-data fit
+## statistics (1) the use of 'equal.width'
+fit1 <- irtfit(x = x, score = score, data = data, group.method = "equal.width",
+  n.width = 11, loc.theta = "average", range.score = c(-4,
+    4), D = 1, alpha = 0.05, missing = NA, overSR = 2.5)
 
-## Step 2: Compute the IRT mode-data fit statistics
-# (1) the use of "equal.width"  
-fit1 <- irtfit(x=x, score=score, data=data, group.method="equal.width",
-               n.width=11, loc.theta="average", range.score=c(-4, 4), D=1, alpha=0.05,
-               missing=NA, overSR = 2.5)
-
-# what kinds of internal objects does the results have?
+# what kinds of internal objects does the results
+# have?
 names(fit1)
 #> [1] "fit_stat"            "contingency.fitstat" "contingency.plot"   
 #> [4] "item_df"             "individual.info"     "ancillary"          
 #> [7] "call"
-
 # show the results of the fit statistics
 fit1$fit_stat[1:10, ]
 #>     id      X2      G2 df.X2 df.G2 crit.value.X2 crit.value.G2 p.value.X2
@@ -1342,8 +1362,8 @@ fit1$fit_stat[1:10, ]
 #> 8           0  1.129 1.083 13885       0.455
 #> 9           0  1.065 1.051 12118       0.636
 #> 10          0  1.075 1.059 10719       0.545
-
-# show the contingency tables for the first item (dichotomous)
+# show the contingency tables for the first item
+# (dichotomous)
 fit1$contingency.fitstat[[1]]
 #>      N freq.0 freq.1 obs.prop.0 obs.prop.1 exp.prob.0 exp.prob.1 raw_resid.0
 #> 1    8      5      3  0.6250000  0.3750000  0.7627914  0.2372086 -0.13779141
@@ -1367,12 +1387,10 @@ fit1$contingency.fitstat[[1]]
 #> 8   0.10866594
 #> 9   0.03995295
 #> 10 -0.02502128
-
-
-# (2) the use of "equal.freq"  
-fit2 <- irtfit(x=x, score=score, data=data, group.method="equal.freq",
-               n.width=11, loc.theta="average", range.score=c(-4, 4), D=1, alpha=0.05,
-               missing=NA)
+# (2) the use of 'equal.freq'
+fit2 <- irtfit(x = x, score = score, data = data, group.method = "equal.freq",
+  n.width = 11, loc.theta = "average", range.score = c(-4,
+    4), D = 1, alpha = 0.05, missing = NA)
 
 # show the results of the fit statistics
 fit2$fit_stat[1:10, ]
@@ -1398,8 +1416,8 @@ fit2$fit_stat[1:10, ]
 #> 8           0  1.129 1.083 13885       0.636
 #> 9           0  1.065 1.051 12118       0.364
 #> 10          0  1.075 1.059 10719       0.636
-
-# show the contingency table for the fourth item (polytomous)
+# show the contingency table for the fourth item
+# (polytomous)
 fit2$contingency.fitstat[[4]]
 #>       N freq.0 freq.1 obs.prop.0 obs.prop.1 exp.prob.0 exp.prob.1  raw_resid.0
 #> 1  1241    967    274  0.7792103  0.2207897  0.8038510  0.1961490 -0.024640641
@@ -1425,11 +1443,11 @@ fit2$contingency.fitstat[[4]]
 #> 9  -0.055381721
 #> 10 -0.049722759
 #> 11 -0.113805214
-
-## Step 3: Draw the IRT residual plots 
-# 1. the dichotomous item
-# (1) both raw and standardized residual plots using the object "fit1"  
-plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE)
+## Step 3: Draw the IRT residual plots 1. the
+## dichotomous item (1) both raw and standardized
+## residual plots using the object 'fit1'
+plot(x = fit1, item.loc = 1, type = "both", ci.method = "wald",
+  ylim.sr.adjust = TRUE)
 ```
 
 <img src="man/figures/README-example-2.png" width="70%" height="50%" />
@@ -1494,9 +1512,10 @@ plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE
     #> (1.53421,1.741222]       -3.4318859   3.4318859
     #> (1.741222,1.948233]      -1.5780508   1.5780508
     #> (1.948233,2.155245]       0.7729850  -0.7729850
-    
-    # (2) the raw residual plots using the object "fit1"  
-    plot(x=fit1, item.loc=1, type = "icc", ci.method = "wald",  ylim.sr.adjust=TRUE)
+    # (2) the raw residual plots using the object
+    # 'fit1'
+    plot(x = fit1, item.loc = 1, type = "icc", ci.method = "wald",
+      ylim.sr.adjust = TRUE)
 
 <img src="man/figures/README-example-3.png" width="70%" height="50%" />
 
@@ -1560,9 +1579,10 @@ plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE
     #> (1.53421,1.741222]       -3.4318859   3.4318859
     #> (1.741222,1.948233]      -1.5780508   1.5780508
     #> (1.948233,2.155245]       0.7729850  -0.7729850
-    
-    # (3) the standardized residual plots using the object "fit1"  
-    plot(x=fit1, item.loc=113, type = "sr", ci.method = "wald",  ylim.sr.adjust=TRUE)
+    # (3) the standardized residual plots using the
+    # object 'fit1'
+    plot(x = fit1, item.loc = 113, type = "sr", ci.method = "wald",
+      ylim.sr.adjust = TRUE)
 
 <img src="man/figures/README-example-4.png" width="70%" height="50%" />
 
@@ -1662,10 +1682,11 @@ plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE
     #> (1.664659,1.828188]    -2.0409436  -5.5381760   0.7380923   2.5480159
     #> (1.828188,1.991716]    -0.7312476  -2.0763275  -5.6100775   6.4995706
     #> (1.991716,2.155245]    -1.0229057  -3.2723764  -9.8393733  10.9248190
-    
-    # 2. the polytomous item
-    # (1) both raw and standardized residual plots using the object "fit1"  
-    plot(x=fit1, item.loc=113, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE)
+    # 2. the polytomous item (1) both raw and
+    # standardized residual plots using the object
+    # 'fit1'
+    plot(x = fit1, item.loc = 113, type = "both", ci.method = "wald",
+      ylim.sr.adjust = TRUE)
 
 <img src="man/figures/README-example-5.png" width="70%" height="50%" />
 
@@ -1765,9 +1786,10 @@ plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE
     #> (1.664659,1.828188]    -2.0409436  -5.5381760   0.7380923   2.5480159
     #> (1.828188,1.991716]    -0.7312476  -2.0763275  -5.6100775   6.4995706
     #> (1.991716,2.155245]    -1.0229057  -3.2723764  -9.8393733  10.9248190
-    
-    # (2) the raw residual plots using the object "fit1"  
-    plot(x=fit1, item.loc=113, type = "icc", ci.method = "wald", layout.col=2, ylim.sr.adjust=TRUE)
+    # (2) the raw residual plots using the object
+    # 'fit1'
+    plot(x = fit1, item.loc = 113, type = "icc", ci.method = "wald",
+      layout.col = 2, ylim.sr.adjust = TRUE)
 
 <img src="man/figures/README-example-6.png" width="70%" height="50%" />
 
@@ -1867,9 +1889,10 @@ plot(x=fit1, item.loc=1, type = "both", ci.method = "wald",  ylim.sr.adjust=TRUE
     #> (1.664659,1.828188]    -2.0409436  -5.5381760   0.7380923   2.5480159
     #> (1.828188,1.991716]    -0.7312476  -2.0763275  -5.6100775   6.4995706
     #> (1.991716,2.155245]    -1.0229057  -3.2723764  -9.8393733  10.9248190
-    
-    # (3) the standardized residual plots using the object "fit1"  
-    plot(x=fit1, item.loc=113, type = "sr", ci.method = "wald", layout.col=4, ylim.sr.adjust=TRUE)
+    # (3) the standardized residual plots using the
+    # object 'fit1'
+    plot(x = fit1, item.loc = 113, type = "sr", ci.method = "wald",
+      layout.col = 4, ylim.sr.adjust = TRUE)
 
 <img src="man/figures/README-example-7.png" width="70%" height="50%" />
 

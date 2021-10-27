@@ -10,29 +10,31 @@ calibrate online item parameters (i.e., pretest and operational items), estimate
 fit on item-level in different ways as well as provide useful functions related to unidimensional IRT.
 
 For the item parameter estimation, the marginal maximum likelihood estimation with expectation-maximization (MMLE-EM) algorithm
-(Bock & Aitkin, 1981) is used. For the online calibration, Stocking's Method A (Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988)
-and the fixed item parameter calibration (FIPC) method (Kim, 2006) are provided. For the ability estimation, several popular
-scoring methods (e.g., MLE, EAP, and MAP) are implemented. In terms of assessing the IRT model-data fit, one of distinguished features
-of this package is that it gives not only item fit statistics (e.g., \eqn{\chi^{2}} fit statistic (e.g., Bock, 1960; Yen, 1981),
-likelihood ratio \eqn{\chi^{2}} fit statistic (\eqn{G^{2}}; McKinley & Mills, 1985), infit and outfit statistics (Ames et al., 2015),
-and \eqn{S-X^{2}} (Orlando & Thissen, 2000, 2003)) but also graphical displays to look at residuals between the observed data and
-model-based predictions (Hambleton, Swaminathan, & Rogers, 1991).
+(Bock & Aitkin, 1981) is used. For the online calibration, the fixed item parameter calibration (FIPC) method (Kim, 2006) and 
+the fixed ability parameter calibration (FAPC) method, (Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988),
+often called Stocking's Method A, are provided. For the ability estimation, several popular scoring methods (e.g., MLE, EAP, and MAP) 
+are implemented. In terms of assessing the IRT model-data fit, one of distinguished features of this package is that it gives 
+not only item fit statistics (e.g., \eqn{\chi^{2}} fit statistic (e.g., Bock, 1960; Yen, 1981), likelihood ratio \eqn{\chi^{2}} 
+fit statistic (\eqn{G^{2}}; McKinley & Mills, 1985), infit and outfit statistics (Ames et al., 2015), and \eqn{S-X^{2}} 
+(Orlando & Thissen, 2000, 2003)) but also graphical displays to look at residuals between the observed data and model-based 
+predictions (Hambleton, Swaminathan, & Rogers, 1991).
 
-In addition, there are many useful functions such as computing asymptotic variance-covariance matrices of item parameter estimates,
-importing item and/or ability parameters from popular IRT software, running flexMIRT (Cai, 2017) through R, generating simulated data,
-computing the conditional distribution of observed scores using the Lord-Wingersky recursion formula, computing the loglikelihood of
-individual items, computing the loglikelihood of abilities, computing item and test information functions, computing item and test
-characteristic curve functions, and plotting item and test characteristic curves and item and test information functions.
+In addition, there are many useful functions such as analyzing differential item functioning (DIF), computing asymptotic 
+variance-covariance matrices of item parameter estimates,importing item and/or ability parameters from popular IRT software, 
+running flexMIRT (Cai, 2017) through R, generating simulated data, computing the conditional distribution of observed scores 
+using the Lord-Wingersky recursion formula, computing the loglikelihood of individual items, computing the loglikelihood 
+of abilities, computing item and test information functions, computing item and test characteristic curve functions, and 
+plotting item and test characteristic curves and item and test information functions.
 
 \tabular{ll}{ Package: \tab irtplay\cr Version: \tab 1.6.3\cr Date: \tab
-2021-06-16\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
+2021-10-26\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
 }
 \details{
 Following five sections describe a) how to implement the online item calibration using FIPC, a) how to implement the online item
 calibration using Method A, b) the process of evaluating the IRT model-data fit, c) two examples for the online calibration and
 evaluating the IRT model-data fit, and d) IRT Models used in \pkg{irtplay} package.
 }
-\section{Online item calibration with the fixed item parameter calibration (FIPC) method (e.g., Kim, 2006)}{
+\section{Online item calibration with the fixed item parameter calibration method (e.g., Kim, 2006)}{
 
 
 The fixed item parameter calibration (FIPC) is one of useful online item calibration methods for computerized adaptive testing (CAT)
@@ -99,19 +101,20 @@ package, FIPC is implemented with two main steps:
 }
 }
 
-\section{Online item calibration with Method A (Stocking, 1988)}{
+\section{Online item calibration with the fixed ability parameter calibration method (e.g., Stocking, 1988)}{
 
-In CAT, Method A is the relatively simplest and most straightforward online calibration method,
-which is the maximum likelihood estimation of the item parameters given the proficiency estimates. In CAT, Method A can be used
-to put the parameter estimates of pretest items on the same scale of operational item parameter estimates and recalibrate
-the operational items to evaluate the parameter drifts of the operational items (Chen & Wang, 2016; Stocking, 1988).
-Also, Method A is known to result in accurate, unbiased item parameters calibration when items are randomly rather than
-adaptively administered to examinees, which occurs most commonly with pretest items (Ban, Hanson, Wang, Yi, & Harris, 2001; Chen & Wang, 2016).
-Using \pkg{irtplay} package, Method A is implemented to calibrate the items with two main steps:
+In CAT, the fixed ability parameter calibration (FAPC), often called Stocking's Method A, is the relatively simplest 
+and most straightforward online calibration method, which is the maximum likelihood estimation of the item parameters 
+given the proficiency estimates. In CAT, FAPC can be used to put the parameter estimates of pretest items on 
+the same scale of operational item parameter estimates and recalibrate the operational items to evaluate the parameter 
+drifts of the operational items (Chen & Wang, 2016; Stocking, 1988). Also, FAPC is known to result in accurate, unbiased 
+item parameters calibration when items are randomly rather than adaptively administered to examinees, which occurs most 
+commonly with pretest items (Ban, Hanson, Wang, Yi, & Harris, 2001; Chen & Wang, 2016). Using \pkg{irtplay} package, 
+the FAPC is implemented to calibrate the items with two main steps:
 
 \enumerate{
   \item Prepare a data set for the calibration of item parameters (i.e., item response data and ability estimates).
-  \item Implement Method A to estimate the item parameters using the \code{\link{est_item}} function.
+  \item Implement the FAPC to estimate the item parameters using the \code{\link{est_item}} function.
 }
 
 \describe{

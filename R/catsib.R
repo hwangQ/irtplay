@@ -59,6 +59,7 @@
 #' @examples
 #' 
 #' 
+#' @export
 catsib <- function(x=NULL, data, score=NULL, se=NULL, group, focal.name, D=1, n.bin=c(80, 10), min.binsize=3, max.del=0.075, 
                    alpha=0.05, missing=NA, purify=FALSE, max.iter=10, min.resp=NULL, method="MLE", 
                    range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE) {
