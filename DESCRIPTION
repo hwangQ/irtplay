@@ -52,7 +52,7 @@ Imports:
     parallel,
     Matrix,
 Authors@R: c(person("Hwanggyu", "Lim", email="hglim83@gmail.com", role=c("aut", "cre")),
-    person("Craig S.", "Wells", email="cswells@educ.umass.edu ", rol="ctb")
+    person("Craig S.", "Wells", email="cswells@educ.umass.edu ", role="ctb")
     ) 
 RoxygenNote: 7.1.1
 Suggests: 
