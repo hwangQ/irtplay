@@ -88,7 +88,7 @@ run_flexmirt <- function(file.syntax, dir.flex=NULL, show.output.on.console=FALS
   if(is.null(dir.flex)) {
     
     # find a default directory where flexMIRT is installed exists
-    flex_exist <- dir(path="C:/Program Files", pattern="flexMIRT", full.name=TRUE)
+    flex_exist <- dir(path="C:/Program Files", pattern="flexMIRT", full.names=TRUE)
     
     # provide a warning message when a default directory where flexMIRT is installed does not exist
     if(length(flex_exist) == 0) {
