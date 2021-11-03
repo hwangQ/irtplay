@@ -240,7 +240,7 @@ est_score.default <- function(x, data, D = 1, method = "MLE", range = c(-4, 4), 
     if(ncore == 1L) {
       
       # set a function for scoring
-      f <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
+      f1 <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
                                        norm.prior=norm.prior, nquad=nquad, weights=weights, se=se, 
                                        obs.info=obs.info)
       
@@ -250,7 +250,7 @@ est_score.default <- function(x, data, D = 1, method = "MLE", range = c(-4, 4), 
       for(i in 1:ncase) {
         
         # scoring
-        est[[i]] <- f(i)
+        est[[i]] <- f1(i)
         
       }
       
@@ -293,12 +293,12 @@ est_score.default <- function(x, data, D = 1, method = "MLE", range = c(-4, 4), 
       
       
       # set a function for scoring
-      f <- function(subdat) est_score_1core(meta=meta, data=subdat, D=D, method=method, range=range,
+      f2 <- function(subdat) est_score_1core(meta=meta, data=subdat, D=D, method=method, range=range,
                                             norm.prior=norm.prior, nquad=nquad, weights=weights, se=se, 
                                             obs.info=obs.info)
       
       # parallel scoring
-      est <- parallel::parLapply(cl=cl, X=data_list, fun=f)
+      est <- parallel::parLapply(cl=cl, X=data_list, fun=f2)
       
       # finish
       parallel::stopCluster(cl)
@@ -425,7 +425,7 @@ est_score.est_irt <- function(x, method = "MLE", range = c(-4, 4), norm.prior = 
     if(ncore == 1L) {
       
       # set a function for scoring
-      f <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
+      f1 <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
                                        norm.prior=norm.prior, nquad=nquad, weights=weights, se=se, 
                                        obs.info=obs.info)
       
@@ -435,7 +435,7 @@ est_score.est_irt <- function(x, method = "MLE", range = c(-4, 4), norm.prior = 
       for(i in 1:ncase) {
         
         # scoring
-        est[[i]] <- f(i)
+        est[[i]] <- f1(i)
         
       }
       
@@ -478,12 +478,12 @@ est_score.est_irt <- function(x, method = "MLE", range = c(-4, 4), norm.prior = 
       
       
       # set a function for scoring
-      f <- function(subdat) est_score_1core(meta=meta, data=subdat, D=D, method=method, range=range,
+      f2 <- function(subdat) est_score_1core(meta=meta, data=subdat, D=D, method=method, range=range,
                                             norm.prior=norm.prior, nquad=nquad, weights=weights, se=se, 
                                             obs.info=obs.info)
       
       # parallel scoring
-      est <- parallel::parLapply(cl=cl, X=data_list, fun=f)
+      est <- parallel::parLapply(cl=cl, X=data_list, fun=f2)
       
       # finish
       parallel::stopCluster(cl)
@@ -538,7 +538,7 @@ est_score_1core <- function(meta, data, D = 1, method = "MLE", range = c(-4, 4),
   
   # estimation
   # set a function for scoring
-  f <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
+  f1 <- function(i) est_score_indiv(meta=meta, resp=data[i, ], D=D, method=method, range=range,
                                    norm.prior=norm.prior, nquad=nquad, weights=weights, se=se, 
                                    obs.info=obs.info)
   
@@ -548,7 +548,7 @@ est_score_1core <- function(meta, data, D = 1, method = "MLE", range = c(-4, 4),
   for(i in 1:ncase) {
     
     # scoring
-    est[[i]] <- f(i)
+    est[[i]] <- f1(i)
     
   }
   
