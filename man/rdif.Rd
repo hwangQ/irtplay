@@ -124,14 +124,14 @@ This function returns a list of four internal objects. The four objects are:
 \item{alpha}{A significance \eqn{\alpha}-level used to compute the p-values of RDIF statistics.}
 }
 \description{
-This function computes three RDIF statistics (Lim, Choe, Han, Lee, & Hong, 2021), 
+This function computes three RDIF statistics (Lim, Choe, & Han, Under review; Lim, Choe, Han, Lee, & Hong, 2021), 
 which are \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, for each item. \eqn{RDIF_{R}} primarily 
 captures the typical contrast in raw residual pattern between two groups caused by uniform DIF whereas 
 \eqn{RDIF_{S}} primarily captures the typical contrast in squared residual pattern between two groups caused
 by nonuniform DIF. \eqn{RDIF_{RS}} can reasonably capture both types of DIF.
 }
 \details{
-The RDIF framework (Lim et al., 2021) consists of three IRT residual-based statistics: \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, 
+The RDIF framework (Lim et al., Under review; Lim et al., 2021) consists of three IRT residual-based statistics: \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, 
 and \eqn{RDIF_{RS}}. Under the null hypothesis that a test contains no DIF items, \eqn{RDIF_{R}} and \eqn{RDIF_{S}} follow 
 normal distributions asymptotically. \eqn{RDIF_{RS}} is a based on a bivariate normal distribution of \eqn{RDIF_{R}} and 
 \eqn{RDIF_{S}} statistics. Under the null hypothesis of no DIF items, it follows a \eqn{\chi^{2}} distribution asymptotically 
@@ -267,6 +267,9 @@ print(dif_puri_rs)
 
 }
 \references{
+Lim, H., Choe, E. M., & Han, K. T. (Under review). A residual-based differential item functioning detection framework in 
+item response theory. \emph{Journal of Educational Measurement}. 
+
 Lim, H., Choe, E. M., Han, K. T., Lee, S., & Hong, M. (2021, June). \emph{IRT residual approach 
 to detecting DIF.} Paper presented at the Annual Meeting of the National Council on Measurement 
 in Education. Online.
