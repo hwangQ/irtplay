@@ -60,7 +60,7 @@ Estep_fipc <- function(x1, x2,
 
 # M-step function
 #' @importFrom Matrix bdiag
-Mstep <- function(estep, id, cats, model, quadpt, equation, D=1, loc_1p_const, loc_else, EmpHist, weights,
+Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, EmpHist, weights,
                   fix.a.1pl, fix.a.gpcm, fix.g, a.val.1pl, a.val.gpcm, g.val,
                   use.aprior, use.bprior, use.gprior, aprior, bprior, gprior, group.mean, group.var, nstd,
                   Quadrature, use.startval, control, iter=NULL, fipc=FALSE, reloc.par, info.mstep=FALSE) {
@@ -101,9 +101,9 @@ Mstep <- function(estep, id, cats, model, quadpt, equation, D=1, loc_1p_const, l
       # check the starting values
       if(use.startval) {
         pos_1p_const <- which(meta$drm$loc %in% loc_1p_const)
-        a.val <- meta$drm$a[pos_1p_const][1]
-        b.val <- meta$drm$b[pos_1p_const]
-        startval <- c(a.val, b.val)
+        a.stval <- meta$drm$a[pos_1p_const][1]
+        b.stval <- meta$drm$b[pos_1p_const]
+        startval <- c(a.stval, b.stval)
       } else {
         startval <- NULL
       }
@@ -153,20 +153,20 @@ Mstep <- function(estep, id, cats, model, quadpt, equation, D=1, loc_1p_const, l
           # check the starting values
           if(use.startval) {
             pos_item <- which(meta$drm$loc == loc_else[i])
-            a.val <- meta$drm$a[pos_item]
-            b.val <- meta$drm$b[pos_item]
-            g.val <- meta$drm$g[pos_item]
+            a.stval <- meta$drm$a[pos_item]
+            b.stval <- meta$drm$b[pos_item]
+            g.stval <- meta$drm$g[pos_item]
             if(mod == "1PLM") {
-              startval <- b.val
+              startval <- b.stval
             }
             if(mod == "2PLM") {
-              startval <- c(a.val, b.val)
+              startval <- c(a.stval, b.stval)
             }
             if(mod == "3PLM") {
               if(fix.g) {
-                startval <- c(a.val, b.val)
+                startval <- c(a.stval, b.stval)
               } else {
-                startval <- c(a.val, b.val, g.val)
+                startval <- c(a.stval, b.stval, g.stval)
               }
             }
           } else {
@@ -213,16 +213,16 @@ Mstep <- function(estep, id, cats, model, quadpt, equation, D=1, loc_1p_const, l
           # check the starting values
           if(use.startval) {
             pos_item <- which(meta$plm$loc == loc_else[i])
-            a.val <- meta$plm$a[pos_item]
-            d.val <- meta$plm$d[[pos_item]]
+            a.stval <- meta$plm$a[pos_item]
+            d.stval <- meta$plm$d[[pos_item]]
             if(mod == "GRM") {
-              startval <- c(a.val, d.val)
+              startval <- c(a.stval, d.stval)
             }
             if(mod == "GPCM") {
               if(fix.a.gpcm) {
-                startval <- d.val
+                startval <- d.stval
               } else {
-                startval <- c(a.val, d.val)
+                startval <- c(a.stval, d.stval)
               }
             }
           } else {
@@ -338,7 +338,7 @@ Mstep <- function(estep, id, cats, model, quadpt, equation, D=1, loc_1p_const, l
         # update the prior frequencies
         prior_freq <- unname(colSums(post_dist))
         
-        # normalize the updated prior freqency to obtain prior density function
+        # normalize the updated prior frequency to obtain prior density function
         prior_dense <- prior_freq / nstd
         
         # compute the mean and sd of the updated prior distribution
