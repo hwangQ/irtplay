@@ -714,6 +714,7 @@ est_irt_em <- function(x=NULL, data, D=1, model=NULL, cats=NULL, item.id=NULL, f
     }
     
   }
+  
   if(verbose) {
     cat("", "\n")
   }
