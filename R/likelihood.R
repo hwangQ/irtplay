@@ -21,7 +21,7 @@ likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, thet
     log_ps <- ifelse(is.infinite(log_ps), log(1e-20), log_ps)
     log_qs <- ifelse(is.infinite(log_qs), log(1e-20), log_qs)
 
-    # compute the likelihood values for all examinees at each quadrature point
+    # compute the loglikelihood values for all examinees at each quadrature point
     # a row indicate the examinee and column indicate the quad point
     llike_drm <- tcrossprod(x=data1_drm, y=log_ps) + tcrossprod(x=data2_drm, y=log_qs)
   } else {
@@ -53,7 +53,7 @@ likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, thet
     log_prob.plm <- log(prob.plm)
     log_prob.plm <- ifelse(is.infinite(log_prob.plm), log(1e-20), log_prob.plm)
 
-    # compte the likelihood values for all examinees at each quadrature point
+    # compute the loglikelihood values for all examinees at each quadrature point
     # a row indicate the examinee and column indicate the quad point
     llike_plm <- tcrossprod(x=data_plm, y=log_prob.plm)
   } else {
