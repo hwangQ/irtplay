@@ -364,9 +364,9 @@ est_item <- function(x=NULL, data, score, D=1, model=NULL, cats=NULL, item.id=NU
     # check the starting values
     if(use.startval) {
       pos_1p_const <- which(meta$drm$loc %in% loc_1p_const)
-      a.val <- meta$drm$a[pos_1p_const][1]
-      b.val <- meta$drm$b[pos_1p_const]
-      startval <- c(a.val, b.val)
+      a.stval <- meta$drm$a[pos_1p_const][1]
+      b.stval <- meta$drm$b[pos_1p_const]
+      startval <- c(a.stval, b.stval)
     } else {
       startval <- NULL
     }
@@ -418,20 +418,20 @@ est_item <- function(x=NULL, data, score, D=1, model=NULL, cats=NULL, item.id=NU
         # check the starting values
         if(use.startval) {
           pos_item <- which(meta$drm$loc == loc_else[i])
-          a.val <- meta$drm$a[pos_item]
-          b.val <- meta$drm$b[pos_item]
-          g.val <- meta$drm$g[pos_item]
+          a.stval <- meta$drm$a[pos_item]
+          b.stval <- meta$drm$b[pos_item]
+          g.stval <- meta$drm$g[pos_item]
           if(mod == "1PLM") {
-            startval <- b.val
+            startval <- b.stval
           }
           if(mod == "2PLM") {
-            startval <- c(a.val, b.val)
+            startval <- c(a.stval, b.stval)
           }
           if(mod == "3PLM") {
             if(fix.g) {
-              startval <- c(a.val, b.val)
+              startval <- c(a.stval, b.stval)
             } else {
-              startval <- c(a.val, b.val, g.val)
+              startval <- c(a.stval, b.stval, g.stval)
             }
           }
         } else {
@@ -480,16 +480,16 @@ est_item <- function(x=NULL, data, score, D=1, model=NULL, cats=NULL, item.id=NU
         # check the starting values
         if(use.startval) {
           pos_item <- which(meta$plm$loc == loc_else[i])
-          a.val <- meta$plm$a[pos_item]
-          d.val <- meta$plm$d[[pos_item]]
+          a.stval <- meta$plm$a[pos_item]
+          d.stval <- meta$plm$d[[pos_item]]
           if(mod == "GRM") {
-            startval <- c(a.val, d.val)
+            startval <- c(a.stval, d.stval)
           }
           if(mod == "GPCM") {
             if(fix.a.gpcm) {
-              startval <- d.val
+              startval <- d.stval
             } else {
-              startval <- c(a.val, d.val)
+              startval <- c(a.stval, d.stval)
             }
           }
         } else {
