@@ -1,7 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# irtplay\_1.6.3 (2021-10-26)
+# irtplay\_1.6.3 (2021-11-01)
+
+o resolved the issue occurred when fixing the item guessing parameters
+to a specific (e.g., 0.1) in the `est_irt()` function.
 
 o updated the `est_irt()` function to estimate the population latent
 ability distribution only when all item parameters are fixed in a test
@@ -16,7 +19,8 @@ o added a new argument of ‘item.id’ in the ‘est\_irt()’ and
 ‘est\_item()’ functions where a user can provide item IDs.
 
 o added a new ‘rdif()’ function which computes RDIF statistics (Lim,
-Choe, & Han, 2021) for analyzing DIF.
+Choe, & Han, under review; Lim, Choe, Han, Lee, & Hong, 2021) for
+analyzing DIF.
 
 o updated ‘plot.test.info()’ function so that (a) multiple item
 information functions can be displayed in one panel by setting ‘overlap

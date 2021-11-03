@@ -13,14 +13,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# irtplay_1.6.3 (2021-10-26)
+# irtplay_1.6.3 (2021-11-01)
+o resolved the issue occurred when fixing the item guessing parameters to a specific (e.g., 0.1) in the `est_irt()` function. 
+
 o updated the `est_irt()` function to estimate the population latent ability distribution only when all item parameters are fixed in a test using the fixed item parameter calibration (FIPC). 
 
 o fixed the `est_irt()` function so that the log-likelihood, AIC, and BIC can be computed based on both the fixed- and freely estimated items when the FIPC is implemented. In the previous version, those valused were computed based on only freely estimated items. 
 
 o added a new argument of 'item.id' in the 'est_irt()' and 'est_item()' functions where a user can provide item IDs.  
 
-o added a new 'rdif()' function which computes RDIF statistics (Lim, Choe, & Han, 2021) for analyzing DIF.  
+o added a new 'rdif()' function which computes RDIF statistics (Lim, Choe, & Han, under review; Lim, Choe, Han, Lee, & Hong, 2021) for analyzing DIF.  
 
 o updated 'plot.test.info()' function so that (a) multiple item information functions can be displayed in one panel by setting 'overlap = TRUE' and (b) a plot of conditional standard error of estimation at a test level can be shown by setting 'csee = TRUE'. 
 
