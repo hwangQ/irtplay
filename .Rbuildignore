@@ -8,3 +8,4 @@
 ^data-raw$
 R/catsib.R
 R/rdif2.R
+^CRAN-RELEASE$
