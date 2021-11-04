@@ -105,20 +105,26 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
     if(model %in% c("1PLM", "2PLM", "3PLM")) {
       
       # initial estimation to find better starting values
-      tmp_est <- vector('list', 2)
+      tmp_est <- vector('list', 3)
       tmp_est[[1]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=theta, model=model, D=D,
                                     fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
                                     aprior=aprior, bprior=bprior, gprior=gprior,
                                     use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
                                     gradient=grad_item_drm,
-                                    control=list(eval.max=50, iter.max=30, trace=0, step.min=1), lower=lower, upper=upper)
+                                    control=list(eval.max=100, iter.max=50, trace=0, step.min=0.1, step.max=1), lower=lower, upper=upper)
       tmp_est[[2]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=theta, model=model, D=D,
                                     fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
                                     aprior=aprior, bprior=bprior, gprior=gprior,
                                     use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
                                     gradient=grad_item_drm,
-                                    control=list(eval.max=50, iter.max=30, trace=0, step.min=2), lower=lower, upper=upper)
-      tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+                                    control=list(eval.max=100, iter.max=50, trace=0, step.min=1, step.max=2), lower=lower, upper=upper)
+      tmp_est[[3]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=theta, model=model, D=D,
+                                    fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
+                                    aprior=aprior, bprior=bprior, gprior=gprior,
+                                    use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
+                                    gradient=grad_item_drm,
+                                    control=list(eval.max=100, iter.max=50, trace=0, step.min=2, step.max=3), lower=lower, upper=upper)
+      tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
       item_par <- tmp_est[[tmp_num]]$par
       
       # estimate the item parameters
@@ -133,9 +139,9 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
                                   control=control, lower=lower, upper=upper)}, error = function(e) {NULL})
         )
       
-      # second estimation with second an alternative values when the first calibration fails
+      # second estimation with second alternative values when the first calibration fails
       if(is.null(est) || est$convergence > 0L) {
-        tmp_num <- which.max(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+        tmp_num <- order(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))[2]
         item_par <- tmp_est[[tmp_num]]$par
         est <- 
           suppressWarnings(
@@ -151,7 +157,7 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
       
       # third estimation by only using the gradient when the second calibration fails
       if(is.null(est) || est$convergence > 0L) {
-        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
         item_par <- tmp_est[[tmp_num]]$par
         
         # if error or non-convergence, only use the gradient
@@ -174,18 +180,23 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
     } else {
       
       # initial estimation to find better starting values
-      tmp_est <- vector('list', 2)
+      tmp_est <- vector('list', 3)
       tmp_est[[1]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=theta, pmodel=model, D=D,
                                     fix.a=fix.a.gpcm, a.val=a.val.gpcm,
                                     aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
                                     gradient=grad_item_plm,
-                                    control=list(eval.max=50, iter.max=30, step.min=1, trace=0), lower=lower, upper=upper)
+                                    control=list(eval.max=50, iter.max=30, step.min=0.1, step.max=1, trace=0), lower=lower, upper=upper)
       tmp_est[[2]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=theta, pmodel=model, D=D,
                                     fix.a=fix.a.gpcm, a.val=a.val.gpcm,
                                     aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
                                     gradient=grad_item_plm,
-                                    control=list(eval.max=50, iter.max=30, step.min=2, trace=0), lower=lower, upper=upper)
-      tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+                                    control=list(eval.max=50, iter.max=30, step.min=1, step.max=2, trace=0), lower=lower, upper=upper)
+      tmp_est[[3]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=theta, pmodel=model, D=D,
+                                    fix.a=fix.a.gpcm, a.val=a.val.gpcm,
+                                    aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
+                                    gradient=grad_item_plm,
+                                    control=list(eval.max=50, iter.max=30, step.min=2, step.max=3, trace=0), lower=lower, upper=upper)
+      tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
       item_par <- tmp_est[[tmp_num]]$par
       
       # estimate the item parameters
@@ -199,9 +210,9 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
                                   control=control, lower=lower, upper=upper)}, error = function(e) {NULL})
         )
       
-      # second estimation with second an alternative values when the first calibration fails
+      # second estimation with second alternative values when the first calibration fails
       if(is.null(est) || est$convergence > 0L) {
-        tmp_num <- which.max(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+        tmp_num <- order(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))[2]
         item_par <- tmp_est[[tmp_num]]$par
         est <-
           suppressWarnings(
@@ -216,7 +227,7 @@ estimation <- function(f_i, r_i, theta, model=c("1PLM", "2PLM", "3PLM", "GRM", "
       
       # third estimation by only using the gradient when the second calibration fails
       if(is.null(est) || est$convergence > 0L) {
-        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
         item_par <- tmp_est[[tmp_num]]$par
         
         # if error or non-convergence, only use the gradient
@@ -274,8 +285,8 @@ estimation2 <- function(f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM", "GRM",
                         gprior=list(dist="beta", params=c(5, 17)),
                         use.aprior=FALSE, use.bprior=FALSE, use.gprior=TRUE,
                         control, startval=NULL, iter=NULL) {
-
-
+  
+  
   # create an initial item parameter vector
   # and set the bouds of the item parameters
   if(model == "1PLM") {
@@ -333,11 +344,11 @@ estimation2 <- function(f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM", "GRM",
       upper <- c(Inf, rep(Inf, (cats-1)))
     }
   }
-
-
+  
+  
   # estimation of item parameter & standard error
   if(!fix.a.1pl & model == "1PLM") {
-
+    
     # when the item slope parameters are constrained to be equal across all 1PLM items
     # estimate the item parameters
     est <- tryCatch({stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=quadpt, model=model, D=D,
@@ -357,31 +368,37 @@ estimation2 <- function(f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM", "GRM",
                            # hessian=hess_item_drm,
                            control=control, lower=lower, upper=upper)
     }
-
+    
   } else {
-
+    
     # when the item slope parameters are not constrained to be across all items
     if(model %in% c("1PLM", "2PLM", "3PLM")) {
-
+      
       # initial estimation to find better starting values
       if(iter < 3) {
-        tmp_est <- vector('list', 2)
+        tmp_est <- vector('list', 3)
         tmp_est[[1]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=quadpt, model=model, D=D,
                                       fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
                                       aprior=aprior, bprior=bprior, gprior=gprior,
                                       use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
                                       gradient=grad_item_drm,
-                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), trace=0, step.min=1), lower=lower, upper=upper)
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), trace=0, step.min=0.1, step.max=1), lower=lower, upper=upper)
         tmp_est[[2]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=quadpt, model=model, D=D,
                                       fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
                                       aprior=aprior, bprior=bprior, gprior=gprior,
                                       use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
                                       gradient=grad_item_drm,
-                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), trace=0, step.min=2), lower=lower, upper=upper)
-        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), trace=0, step.min=1, step.max=2), lower=lower, upper=upper)
+        tmp_est[[3]] <- stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=quadpt, model=model, D=D,
+                                      fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
+                                      aprior=aprior, bprior=bprior, gprior=gprior,
+                                      use.aprior=use.aprior, use.bprior=use.bprior, use.gprior=use.gprior,
+                                      gradient=grad_item_drm,
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), trace=0, step.min=2, step.max=3), lower=lower, upper=upper)
+        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
         item_par <- tmp_est[[tmp_num]]$par
       }
-
+      
       # estimate the item parameters
       est <- tryCatch({stats::nlminb(item_par, objective=loglike_drm, f_i=f_i, r_i=r_i, theta=quadpt, model=model, D=D,
                                      fix.a=fix.a.1pl, fix.g=fix.g, a.val=a.val.1pl, g.val=g.val, n.1PLM=NULL,
@@ -400,26 +417,31 @@ estimation2 <- function(f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM", "GRM",
                              # hessian=hess_item_drm,
                              control=control, lower=lower, upper=upper)
       }
-
+      
     } else {
-
+      
       # initial estimation to find better starting values
       if(iter < 3) {
-        tmp_est <- vector('list', 2)
+        tmp_est <- vector('list', 3)
         tmp_est[[1]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=quadpt, pmodel=model, D=D,
                                       fix.a=fix.a.gpcm, a.val=a.val.gpcm,
                                       aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
                                       gradient=grad_item_plm,
-                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), step.min=1, trace=0), lower=lower, upper=upper)
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), step.min=0.1, step.max=1, trace=0), lower=lower, upper=upper)
         tmp_est[[2]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=quadpt, pmodel=model, D=D,
                                       fix.a=fix.a.gpcm, a.val=a.val.gpcm,
                                       aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
                                       gradient=grad_item_plm,
-                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), step.min=2, trace=0), lower=lower, upper=upper)
-        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective))
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), step.min=1, step.max=2, trace=0), lower=lower, upper=upper)
+        tmp_est[[3]] <- stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=quadpt, pmodel=model, D=D,
+                                      fix.a=fix.a.gpcm, a.val=a.val.gpcm,
+                                      aprior=aprior, bprior=bprior, use.aprior=use.aprior, use.bprior=use.bprior,
+                                      gradient=grad_item_plm,
+                                      control=list(eval.max=40-(iter * 10), iter.max=25-(iter*5), step.min=2, step.max=3, trace=0), lower=lower, upper=upper)
+        tmp_num <- which.min(c(tmp_est[[1]]$objective, tmp_est[[2]]$objective, tmp_est[[3]]$objective))
         item_par <- tmp_est[[tmp_num]]$par
       }
-
+      
       # estimate the item parameters
       est <- tryCatch({stats::nlminb(item_par, objective=loglike_plm, r_i=r_i, theta=quadpt, pmodel=model, D=D,
                                      fix.a=fix.a.gpcm, a.val=a.val.gpcm,
@@ -436,15 +458,15 @@ estimation2 <- function(f_i, r_i, quadpt, model=c("1PLM", "2PLM", "3PLM", "GRM",
                              # hessian=hess_item_plm,
                              control=control, lower=lower, upper=upper)
       }
-
+      
     }
-
+    
   }
-
+  
   # return results
   rst <- list(pars=est$par, convergence=est$convergence, objective=est$objective)
-
+  
   rst
-
+  
 }
 
