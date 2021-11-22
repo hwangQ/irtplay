@@ -13,6 +13,23 @@ knitr::opts_chunk$set(
 )
 ```
 
+
+# irtplay_1.6.4 (2021-11-22)
+o added a new function, 'est_mg()', for the multiple group (MG) item calibration (Bock & Zimowski, 1997). The new function also supports the MG fixed item calibration (MG-FIPC) method (e.g., Kim & Kolen, 2016).   
+
+o added a new argument, 'se', in the 'est_irt()' function. If 'se = FALSE', the standard errors of the item parameter estimates are not computed.
+
+o added a new argument, 'fix.id', in the 'est_irt()' function. When implementing the fixed item parameter calibration (FIPC), the fixed items can be specified by either of the 'fix.loc' or 'fix.id' arguments. 
+
+o updated the `write.flexmirt()` function so that it can also create a "-prm.txt" file for flexMIRT software with multiple groups. 
+The previous version only worked for a single group. 
+
+o updated the `write.flexmirt()` function so that it can also create a "-prm.txt" file for flexMIRT software with multiple groups. 
+The previous version only worked for a single group. 
+
+o added a new simulated data sets called `simMG` with three multiple groups. 
+
+
 # irtplay_1.6.3 (2021-11-01)
 o resolved the issue occurred when fixing the item guessing parameters to a specific (e.g., 0.1) in the `est_irt()` function. 
 
