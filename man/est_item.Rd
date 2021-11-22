@@ -36,7 +36,7 @@ each item (i.e., number of score categories and IRT model) to be calibrated. You
 item metadata using the function \code{\link{shape_df}}. When \code{use.startval = TRUE}, the item parameters
 specified in the item metadata are used as the starting values for the item parameter estimation.
 If \code{x = NULL}, the arguments of \code{model} and \code{cats} must be specified. See \code{\link{irtfit}},
-\code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata.}
+\code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata. Default is NULL.}
 
 \item{data}{A matrix containing examinees' response data for the items in the argument \code{x}. A row and column indicate
 the examinees and items, respectively.}
@@ -50,13 +50,14 @@ Default is 1.}
 \item{model}{A vector of character strings indicating what IRT model is used to calibrate each item. Available IRT models are
 "1PLM", "2PLM", "3PLM", and "DRM" for dichotomous items, and "GRM" and "GPCM" for polytomous items. "GRM" and "GPCM" represent the graded
 response model and (generalized) partial credit model, respectively. Note that "DRM" is considered as "3PLM" in this function.
-If a single character of the IRT model is specified, that model will be recycled across all items. This information is only required
-when \code{x = NULL}.}
+If a single character of the IRT model is specified, that model will be recycled across all items. The provided information in the \code{model} 
+argument is used only when \code{x = NULL}. Default is NULL.}
 
 \item{cats}{A numeric vector specifying the number of score categories for each item. For example, a dichotomous
-item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If NULL and all items
-are binary items (i.e., dichotomous items), it assumes that all items have two score categories. This information is only required
-when \code{x = NULL}.}
+item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If \code{cats = NULL} 
+and all specified models in the \code{model} argument are the dichotomous models (i.e., 1PLM, 2PLM, 3PLM, or DRM), it assumes 
+that all items have two score categories. The provided information in the \code{cats} argument is used only when \code{x = NULL}. 
+Default is NULL.}
 
 \item{item.id}{A character vector of item IDs. If NULL, the item IDs are generated automatically. Default is NULL.}
 

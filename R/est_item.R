@@ -14,7 +14,7 @@
 #' item metadata using the function \code{\link{shape_df}}. When \code{use.startval = TRUE}, the item parameters
 #' specified in the item metadata are used as the starting values for the item parameter estimation.
 #' If \code{x = NULL}, the arguments of \code{model} and \code{cats} must be specified. See \code{\link{irtfit}},
-#' \code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata.
+#' \code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata. Default is NULL. 
 #' @param data A matrix containing examinees' response data for the items in the argument \code{x}. A row and column indicate
 #' the examinees and items, respectively.
 #' @param score A vector of examinees' ability estimates. Length of the vector must be the same as the number of rows in the
@@ -24,12 +24,13 @@
 #' @param model A vector of character strings indicating what IRT model is used to calibrate each item. Available IRT models are
 #' "1PLM", "2PLM", "3PLM", and "DRM" for dichotomous items, and "GRM" and "GPCM" for polytomous items. "GRM" and "GPCM" represent the graded
 #' response model and (generalized) partial credit model, respectively. Note that "DRM" is considered as "3PLM" in this function.
-#' If a single character of the IRT model is specified, that model will be recycled across all items. This information is only required
-#' when \code{x = NULL}.
+#' If a single character of the IRT model is specified, that model will be recycled across all items. The provided information in the \code{model} 
+#' argument is used only when \code{x = NULL}. Default is NULL. 
 #' @param cats A numeric vector specifying the number of score categories for each item. For example, a dichotomous
-#' item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If NULL and all items
-#' are binary items (i.e., dichotomous items), it assumes that all items have two score categories. This information is only required
-#' when \code{x = NULL}.
+#' item has two score categories. If a single numeric value is specified, that value will be recycled across all items. If \code{cats = NULL} 
+#' and all specified models in the \code{model} argument are the dichotomous models (i.e., 1PLM, 2PLM, 3PLM, or DRM), it assumes 
+#' that all items have two score categories. The provided information in the \code{cats} argument is used only when \code{x = NULL}. 
+#' Default is NULL.
 #' @param item.id A character vector of item IDs. If NULL, the item IDs are generated automatically. Default is NULL. 
 #' @param fix.a.1pl A logical value. If TRUE, the slope parameters of the 1PLM items are fixed to a specific value specified in the argument
 #' \code{a.val.1pl}. Otherwise, the slope parameters of all 1PLM items are constrained to be equal and estimated. Default is FALSE.
@@ -235,6 +236,10 @@ est_item <- function(x=NULL, data, score, D=1, model=NULL, cats=NULL, item.id=NU
     x <- shape_df(item.id=item.id, cats=cats, model=model, empty.par=TRUE)
   }
   
+  # if data contains a vector change it to a matrix with 1 column
+  if(is.vector(data)) {
+    data <- data.matrix(data)  
+  } 
   
   # check whether included data are correct
   if(nrow(x) != ncol(data)) stop("The number of items included in 'x' and 'data' must be the same.", call.=FALSE)
@@ -253,7 +258,8 @@ est_item <- function(x=NULL, data, score, D=1, model=NULL, cats=NULL, item.id=NU
   }
   
   # transform a data set to data.frame
-  data <- data.frame(data)
+  data <- data.frame(data)    
+
   
   # check the total number of item in the response data set
   nitem <- ncol(data)
