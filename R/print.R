@@ -1,4 +1,79 @@
 #' @export
+print.summary.est_mg <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
+  
+  cat("\nCall:\n", paste(x$call.expr, sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+  cat("Summary of the Data \n")
+  cat(" Number of Items: \n", sep="")
+  cat("  Overall: ", x$nitem$overall," unique items \n", sep="")
+  cat("  By group: ", paste(paste(x$nitem$group, "(", x$group.name, ")", sep=""), collapse = ", "), "\n", sep="")
+  cat(" Number of Cases: \n", sep="")
+  cat("  Overall: ", x$ncase$overall,"\n", sep="")
+  cat("  By group: ", paste(paste(x$ncase$group, "(", x$group.name, ")", sep=""), collapse = ", "), "\n\n", sep="")
+  
+  cat("Summary of Estimation Process \n")
+  cat(" Maximum number of EM cycles: ", x$MaxE, "\n", sep="")
+  cat(" Convergence criterion of E-step: ", x$Etol, "\n", sep="")
+  cat(" Number of rectangular quadrature points: ", nrow(x$weights[[1]]), "\n", sep="")
+  cat(" Minimum & Maximum quadrature points: ", x$weights[[1]][1, 1], ", ", -x$weights[[1]][1, 1], "\n", sep="")
+  cat(" Number of free parameters: ", x$npar.est, "\n", sep="")
+  cat(" Number of fixed items: \n", sep="")
+  cat("  Overall: ", length(x$fix.loc$overall),"\n", sep="")
+  cat("  By group: ", paste(paste(purrr::map_dbl(.x=x$fix.loc$group, length), "(", x$group.name, ")", sep=""), collapse = ", "), "\n", sep="")
+  cat(" Number of E-step cycles completed: ", x$niter, "\n", sep="")
+  cat(" Maximum parameter change: ", x$maxpar.diff, "\n\n", sep="")
+  
+  cat("Processing time (in seconds) \n")
+  cat(" EM algorithm: ", x$EMtime, "\n", sep="")
+  cat(" Standard error computation: ", x$SEtime, "\n", sep="")
+  cat(" Total computation: ", x$TotalTime, "\n\n", sep="")
+  
+  cat("Convergence and Stability of Solution \n")
+  cat(" First-order test: ", x$test.1, "\n", sep="")
+  cat(" Second-order test: ", x$test.2, "\n", sep="")
+  cat(" Computation of variance-covariance matrix: \n", "  ", x$var.note, "\n\n", sep="")
+  
+  cat("Summary of Estimation Results \n")
+  cat(" -2loglikelihood: \n", sep="")
+  cat("  Overall: ", round(-2 * x$loglikelihood$overall, 3),"\n", sep="")
+  cat("  By group: ", paste(paste(round(-2 * unlist(x$loglikelihood$group), 3), "(", x$group.name, ")", sep=""), collapse = ", "), "\n\n", sep="")
+  cat(" Akaike Information Criterion (AIC): ", round(x$aic, 3), "\n", sep="")
+  cat(" Bayesian Information Criterion (BIC): ", round(x$bic, 3), "\n", sep="")
+  cat(" Item Parameters (Overall): \n")
+  item.par <- purrr::modify_if(.x=x$estimates$overall, .p=is.numeric, .f=round, digits=digits)
+  print(item.par, print.gap=2, quote=FALSE)
+  cat(" Group Parameters: \n")
+  group.par <- 
+    purrr::modify(.x=x$group.par, .f=round, digits=digits) %>% 
+    dplyr::bind_rows()
+  rownames(group.par) <- paste(rep(c("estimate", "se"), x$ngroup), "(", rep(x$group.name, each=2), ")", sep="")
+  print(group.par, print.gap=2, quote=FALSE)
+  cat("\n")
+  invisible(x)
+  
+}
+
+
+#' @export
+print.est_mg <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
+  
+  call.expr <- deparse(x$call)
+  cat("\nCall:\n", paste(call.expr, sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+  
+  cat("Multiple-Group Item parameter estimation using MMLE-EM. \n")
+  cat(x$niter, " E-step cycles were completed using ", nrow(x$weights[[1]]), " quadrature points.", "\n", sep="")
+  cat("First-order test: ", x$test.1, "\n", sep="")
+  cat("Second-order test: ", x$test.2, "\n", sep="")
+  cat("Computation of variance-covariance matrix: \n", "  ", x$var.note, "\n\n", sep="")
+  cat("Log-likelihood: ", (x$loglikelihood$overall), "\n", sep="")
+  
+  cat("\n")
+  invisible(x)
+  
+}
+
+#' @export
 print.rdif <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
   
   call.expr <- deparse(x$call)

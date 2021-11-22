@@ -3,12 +3,15 @@
 \name{summary}
 \alias{summary}
 \alias{summary.est_irt}
+\alias{summary.est_mg}
 \alias{summary.est_item}
 \title{Summary of item calibration}
 \usage{
 summary(object, ...)
 
 \method{summary}{est_irt}(object, ...)
+
+\method{summary}{est_mg}(object, ...)
 
 \method{summary}{est_item}(object, ...)
 }
@@ -24,6 +27,8 @@ or \code{\link{est_item}} object.
 \section{Methods (by class)}{
 \itemize{
 \item \code{est_irt}: An object created by the function \code{\link{est_irt}}.
+
+\item \code{est_mg}: An object created by the function \code{\link{est_mg}}.
 
 \item \code{est_item}: An object created by the function \code{\link{est_item}}.
 }}

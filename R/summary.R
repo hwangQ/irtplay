@@ -57,6 +57,48 @@ summary.est_irt <- function(object, ...) {
 
 }
 
+#' @describeIn summary An object created by the function \code{\link{est_mg}}.
+#' @export
+summary.est_mg <- function(object, ...) {
+  
+  call.expr <- deparse(object$call)
+  nitem <- object$nitem
+  ncase <- object$ncase
+  MaxE <- object$MaxE
+  Etol <- object$Etol
+  weights <- object$weights
+  npar.est <- object$npar.est
+  niter <- object$niter
+  maxpar.diff <- object$maxpar.diff
+  EMtime <- object$EMtime
+  SEtime <- object$SEtime
+  TotalTime <- object$TotalTime
+  test.1 <- object$test.1
+  test.2 <- object$test.2
+  var.note <- object$var.note
+  loglikelihood <- object$loglikelihood
+  aic <- object$aic
+  bic <- object$bic
+  estimates <- object$estimates
+  group.par <- object$group.par
+  group.name <- names(object$loglikelihood$group)
+  ngroup <- length(group.name) 
+  fix.loc <- object$fix.loc
+  if(is.null(fix.loc$overal)) {fix.loc$group <- purrr::map(.x=1:ngroup, ~{NULL})}
+  names(fix.loc$group) <- group.name
+  
+  out <- list(call.expr=call.expr, nitem=nitem, ncase=ncase, MaxE=MaxE, Etol=Etol,
+              weights=weights, npar.est=npar.est, fix.loc=fix.loc, niter=niter,
+              maxpar.diff=maxpar.diff, EMtime=EMtime, SEtime=SEtime, TotalTime=TotalTime,
+              test.1=test.1, test.2=test.2, var.note=var.note, loglikelihood=loglikelihood,
+              aic=aic, bic=bic, estimates=estimates, group.par=group.par, group.name=group.name, 
+              ngroup=ngroup)
+  class(out) <- "summary.est_mg"
+  out
+  
+}
+
+
 #' @describeIn summary An object created by the function \code{\link{est_item}}.
 #' @export
 summary.est_item <- function(object, ...) {

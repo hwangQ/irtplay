@@ -1,51 +1,54 @@
 # E-step function
-Estep <- function(x, data1_drm, data2_drm, data_plm, freq.cat, weights, D=1) {
-
+Estep <- function(x, data1_drm, data2_drm, data_plm, freq.cat, weights, D=1, idx.std = NULL) {
+  
   # listrize the data.frame
   meta <- metalist2(x)
-
+  
   # compute the likelihood and log-likelihood matrix
-  L_LL <- likelihood(meta, data1_drm=data1_drm, data2_drm=data2_drm, data_plm=data_plm, theta=weights[, 1], D=D)
+  if(is.null(idx.std)) {
+    L_LL <- likelihood(meta, data1_drm=data1_drm, data2_drm=data2_drm, data_plm=data_plm, theta=weights[, 1], D=D) 
+  } else {
+    L_LL <- likelihood(meta, data1_drm=data1_drm, data2_drm=data2_drm, data_plm=data_plm, theta=weights[[1]][, 1], D=D) 
+  }
   likehd <- L_LL$L
   loglikehd <- L_LL$LL
-
+  
   # posterior distribution
-  post_dist <- posterior(likehd, weights)
-
+  post_dist <- posterior(likehd=likehd, weights=weights, idx.std=idx.std)
+  
   # compute the expected frequency of scores categories across all items
   # this is the conditional expectation of item responses with respect to posterior likelihood distribution
   post_tp <- t(post_dist)
   freq.exp <- purrr::map(.x=freq.cat, .f=function(x) post_tp %*% x)
-
+  
   # return results
-  rst <- list(meta=meta, post_dist=post_dist, freq.exp=freq.exp, loglikehd=loglikehd, likehd=likehd)
+  rst <- list(meta=meta, post_dist=post_dist, freq.exp=freq.exp, loglikehd=loglikehd, likehd=likehd, idx.std=idx.std)
   rst
-
+  
 }
 
 # E-step function when FIPC method is used
 Estep_fipc <- function(x1, x2,
                        data1_drm1, data2_drm1, data_plm1,
                        data1_drm2, data2_drm2, data_plm2,
-                       freq.cat, weights, D=1) {
+                       freq.cat, weights, D=1, idx.std = NULL) {
   
   # listrize the data.frame
   meta1 <- metalist2(x1) # meta information of the new items
   meta2 <- metalist2(x2) # meta information of the fixed items or all items
   
-  # compute the likelihood and log-likelihood matrix of the new items to be estimated
-  # L_LL1 <- likelihood(meta1, data1_drm=data1_drm1, data2_drm=data2_drm1, data_plm=data_plm1, theta=weights[, 1], D=D)
-  # likehd1 <- L_LL1$L
-  # loglikehd1 <- L_LL1$LL
-  
   # compute the likelihood and log-likelihood matrix of the fixed items (in the first iteration of EM) or all items (in the rest of the iteration of EM)
   # this (log) likelihood matrix is used only for computing the posterior density of ability
-  L_LL <- likelihood(meta2, data1_drm=data1_drm2, data2_drm=data2_drm2, data_plm=data_plm2, theta=weights[, 1], D=D)
+  if(is.null(idx.std)) {
+    L_LL <- likelihood(meta2, data1_drm=data1_drm2, data2_drm=data2_drm2, data_plm=data_plm2, theta=weights[, 1], D=D)    
+  } else {
+    L_LL <- likelihood(meta2, data1_drm=data1_drm2, data2_drm=data2_drm2, data_plm=data_plm2, theta=weights[[1]][, 1], D=D)
+  }
   likehd <- L_LL$L
   loglikehd <- L_LL$LL
   
   # posterior distribution
-  post_dist <- posterior(likehd, weights)
+  post_dist <- posterior(likehd=likehd, weights=weights, idx.std=idx.std)
   
   # compute the expected frequency of scores categories across all items
   # this is the conditional expectation of item responses with respect to posterior likelihood distribution
@@ -53,17 +56,17 @@ Estep_fipc <- function(x1, x2,
   freq.exp <- purrr::map(.x=freq.cat, .f=function(x) post_tp %*% x)
   
   # return results
-  rst <- list(meta=meta1, post_dist=post_dist, freq.exp=freq.exp, loglikehd=loglikehd, likehd=likehd)
+  rst <- list(meta=meta1, post_dist=post_dist, freq.exp=freq.exp, loglikehd=loglikehd, likehd=likehd, idx.std=idx.std)
   rst
   
 }
 
-# M-step function
 #' @importFrom Matrix bdiag
 Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, EmpHist, weights,
                   fix.a.1pl, fix.a.gpcm, fix.g, a.val.1pl, a.val.gpcm, g.val,
                   use.aprior, use.bprior, use.gprior, aprior, bprior, gprior, group.mean, group.var, nstd,
-                  Quadrature, use.startval, control, iter=NULL, fipc=FALSE, reloc.par, info.mstep=FALSE) {
+                  Quadrature, use.startval, control, iter=NULL, fipc=FALSE, reloc.par, info.mstep=FALSE, 
+                  ref.group=NULL, free.group=NULL) {
   
   # extract the results of E-step
   meta <- estep$meta
@@ -71,6 +74,7 @@ Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, E
   freq.exp <- estep$freq.exp
   loglikehd <- estep$loglikehd
   likehd <- estep$likehd
+  idx.std <- estep$idx.std
   
   ##----------------------------------------------------------------------
   # (1) item parameter estimation
@@ -108,7 +112,7 @@ Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, E
         startval <- NULL
       }
       
-      # item parameter estimation or compute the M step informaton matrix
+      # item parameter estimation or compute the M step information matrix
       if(!info.mstep) {
         # parameter estimation
         est <- estimation2(f_i=f_i, r_i=r_i, quadpt=quadpt, model="1PLM", D=D, fix.a.1pl=FALSE, n.1PLM=n.1PLM,
@@ -277,10 +281,6 @@ Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, E
       par_df <- data.frame(bind.fill(est_par, type="rbind"))
       par_df$loc <- c(loc_1p_const, loc_else)
       par_vec <- unlist(est_pure)[order(reloc.par)]
-      # par_df <-
-      #   par_df %>%
-      #   dplyr::arrange(.data$loc) %>%
-      #   dplyr::select(-.data$loc)
       par_df <- par_df[order(par_df$loc), ]
       par_df <- par_df[, -ncol(par_df)]
       
@@ -306,58 +306,139 @@ Mstep <- function(estep, id, cats, model, quadpt, D=1, loc_1p_const, loc_else, E
     ##----------------------------------------------------------------------
     # (2) update the prior ability distribution
     ##----------------------------------------------------------------------
+    # divide the posterior dist matrix into each group when idx.std is not NULL
+    # this is only for MG-calibration
+    if(!is.null(idx.std)) {
+      post_dist <- purrr::map(.x = idx.std, ~{post_dist[.x, ]})
+    }
+    
     if(EmpHist) {
       
       # update the prior frequencies
-      prior_freq <- prior_freq2 <- unname(colSums(post_dist))
-      
-      # prevent that the frequency has less than 1e-20
-      prior_freq[prior_freq < 1e-20] <- 1e-20
-      
-      # normalize the updated prior freqency to obtain prior density function
-      # prior_dense <- unname(colSums(post_dist) / nstd)
-      prior_dense <- prior_freq2 /nstd
-      
-      # update the prior densities
-      if(fipc) {
-        # when FIPC is used, no recaling is applied
-        weights <- data.frame(theta=quadpt, weight=prior_dense)
+      if(is.null(idx.std)) {
+        
+        # column sum across all quad points 
+        prior_freq <- prior_freq2 <- unname(colSums(post_dist))
+        
+        # prevent that the frequency has less than 1e-20
+        prior_freq[prior_freq < 1e-20] <- 1e-20
+        
+        # normalize the updated prior frequency to obtain prior density function
+        prior_dense <- prior_freq2 /nstd
+        
+        # update the prior densities
+        if(fipc) {
+          # when FIPC is used, no rescaling is applied
+          weights <- data.frame(theta=quadpt, weight=prior_dense)
+        } else {
+          # rescale the prior density distribution using the same quadrature point by applying Woods (2007) method
+          prior_dense2 <- 
+            scale_prior(prior_freq=prior_freq, prior_dense=prior_dense, quadpt=quadpt,
+                        scale.par=c(group.mean, group.var), Quadrature=Quadrature)
+          weights <- data.frame(theta=quadpt, weight=prior_dense2)
+        }
         
       } else {
+        
+        # column sum across all quad points 
+        prior_freq <- prior_freq2 <- 
+          purrr::map(.x = post_dist, ~{unname(colSums(.x))})
+        
+        # prevent that the frequency has less than 1e-20
+        prior_freq <- 
+          purrr::map(.x = prior_freq, 
+                     .f = function(x) {
+                       x[x < 1e-20] <- 1e-20
+                       x
+                     })
+        
+        # normalize the updated prior frequency to obtain prior density function
+        prior_dense <- purrr::map2(.x = prior_freq2, .y = nstd, ~{.x / .y})
+        
+        # divide the prior frequencies and densities into the reference and free groups
+        prior_freq_ref <- prior_freq[ref.group]
+        prior_dense_ref <- prior_dense[ref.group]
+        prior_freq_free <- prior_freq[free.group]
+        prior_dense_free <- prior_dense[free.group]
+        
         # rescale the prior density distribution using the same quadrature point by applying Woods (2007) method
-        prior_dense2 <- scale_prior(prior_freq=prior_freq, prior_dense=prior_dense, quadpt=quadpt,
-                                    scale.par=c(group.mean, group.var), Quadrature=Quadrature)
-        weights <- data.frame(theta=quadpt, weight=prior_dense2)
+        # rescale the distribution of the reference group first
+        prior_dense_ref2 <- 
+          purrr::map2(.x = prior_freq_ref, .y = prior_dense_ref, 
+                      ~{scale_prior(prior_freq=.x, prior_dense=.y, 
+                                    quadpt=quadpt, scale.par=c(group.mean, group.var), Quadrature=Quadrature)
+                      })
+        
+        # extract the rescaled densities and quadrature points
+        weights.ref <- purrr::map(.x = prior_dense_ref2, ~{data.frame(theta=quadpt, weight=.x)})
+        
+        # replace the old densities with the rescaled densities for the reference group
+        weights[ref.group] <- weights.ref
+        
+        # extract the densities of free groups
+        weights.free <- purrr::map(.x = prior_dense_free, ~{data.frame(theta=quadpt, weight=.x)})
+        
+        # a list of density functions for all reference and free groups
+        weights[free.group] <- weights.free
         
       }
       
     } else {
       
-      if(fipc) {
+      if(is.null(idx.std)) {
         
-        # update the prior frequencies
-        prior_freq <- unname(colSums(post_dist))
-        
-        # normalize the updated prior frequency to obtain prior density function
-        prior_dense <- prior_freq / nstd
-        
-        # compute the mean and sd of the updated prior distribution
-        moments <- cal_moment(node=quadpt, weight=prior_dense)
-        mu <- moments[1]
-        sigma <- sqrt(moments[2])
-        
-        # obtain the updated prior densities from the normal distribution
-        weights <- gen.weight(dist="norm", mu=mu, sigma=sigma, theta=quadpt)
+        if(fipc) {
+          
+          # update the prior frequencies
+          prior_freq <- unname(colSums(post_dist))
+          
+          # normalize the updated prior frequency to obtain prior density function
+          prior_dense <- prior_freq / nstd
+          
+          # compute the mean and sd of the updated prior distribution
+          moments <- cal_moment(node=quadpt, weight=prior_dense)
+          mu <- moments[1]
+          sigma <- sqrt(moments[2])
+          
+          # obtain the updated prior densities from the normal distribution
+          weights <- gen.weight(dist="norm", mu=mu, sigma=sigma, theta=quadpt)
+          
+        } else {
+          weights <- weights
+        }
         
       } else {
-        weights <- weights
+        
+        # column sum across all quad points 
+        prior_freq <- prior_freq2 <- 
+          purrr::map(.x = post_dist, ~{unname(colSums(.x))})
+        
+        # normalize the updated prior frequency to obtain prior density function
+        prior_dense <- purrr::map2(.x = prior_freq2, .y = nstd, ~{.x / .y})
+        
+        # divide the prior densities into the reference and free groups
+        prior_dense_free <- prior_dense[free.group]
+        
+        # compute the mean and sd of the updated prior distribution for the free groups
+        moments_free <- purrr::map(.x = prior_dense_free, ~{cal_moment(node=quadpt, weight=.x)}) 
+        weights.free <- purrr::map(.x = moments_free, ~{gen.weight(dist="norm", mu=.x[1], sigma=sqrt(.x[2]), theta=quadpt)})
+        
+        # replace the old densities with the new densities for the free groups
+        weights[free.group] <- weights.free
+        
       }
       
     }
     
     ##---------------------------------------------------------------
     # compute the sum of loglikelihood values
-    llike <- sum(log(likehd %*% matrix(weights[, 2])))
+    if(is.null(idx.std)) {
+      llike <- sum(log(likehd %*% matrix(weights[, 2])))      
+    } else {
+      likehd.gr <- purrr::map(.x = idx.std, ~{likehd[.x, ]})
+      llike <- purrr::map2(.x = likehd.gr, .y = weights, 
+                           .f = ~{sum(log(.x %*% matrix(.y[, 2])))})
+    }
     
     # organize the the results
     rst <- list(par_df=full_par_df, par_vec=par_vec, convergence=convergence, noconv_items=noconv_items,

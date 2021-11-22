@@ -1,26 +1,26 @@
 # rescaling process by applying Woods's (2007) empirical histogram method
 scale_prior <- function(prior_freq, prior_dense, quadpt, scale.par=c(0, 1), Quadrature) {
-
+  
   # mean and sd of the updated prior distribution
   moments <- cal_moment(node=quadpt, weight=prior_dense)
   mu <- moments[1]
   sigma <- sqrt(moments[2])
-
+  
   # standardize the updated prior distribution by adjusting the original quadrature points
   quadpt_star <- (quadpt - mu) / sigma
-
+  
   # scale transformation using the specified mean and sd
   quadpt_star <- quadpt_star * sqrt(scale.par[2]) + scale.par[1]
-
+  
   # distance between two new quadrature points
   delta <- quadpt_star[2] - quadpt_star[1]
-
+  
   # first point of the new quad points
   qstar_0 <- quadpt_star[1]
-
+  
   # end point of the new quad points
   qstar_Q <- quadpt_star[Quadrature[1]]
-
+  
   # translate back the standardized prior distribution to the original quadrature points
   # (a) extrapolate the frequencies of the original quad points less than or equal to the first new quad point
   quad_tmp1 <- quadpt[quadpt <= qstar_0]
@@ -29,7 +29,7 @@ scale_prior <- function(prior_freq, prior_dense, quadpt, scale.par=c(0, 1), Quad
   } else {
     freq_1 <- NULL
   }
-
+  
   # (b) extrapolate the frequencies of the original quad points greater than or equal to the end new quad point
   quad_tmp3 <- quadpt[quadpt >= qstar_Q]
   if(length(quad_tmp3) > 0) {
@@ -37,7 +37,7 @@ scale_prior <- function(prior_freq, prior_dense, quadpt, scale.par=c(0, 1), Quad
   } else {
     freq_3 <- NULL
   }
-
+  
   # (c) interpolate the frequencies of the rest original quad points
   quad_tmp2 <- quadpt[quadpt > qstar_0 & quadpt < qstar_Q]
   if(length(quad_tmp2) > 0) {
@@ -48,18 +48,18 @@ scale_prior <- function(prior_freq, prior_dense, quadpt, scale.par=c(0, 1), Quad
     N_S <- prior_freq[group - 1]
     N_S2 <- prior_freq[group]
     freq_2 <- (((Q_O - Q_S) / delta) * (N_S2 - N_S)) + N_S
-
+    
   } else {
     freq_2 <- NULL
   }
-
+  
   # translated empirical histogram at the original quad points
   prior_freq2 <- c(freq_1, freq_2, freq_3)
-
+  
   # r-enormalize the empirical histogram
   prior_dense2 <- prior_freq2 / sum(prior_freq2)
-
+  
   # return the prior density
   prior_dense2
-
+  
 }
