@@ -6,7 +6,7 @@
 #' and examine the IRT model-data fit on item-level in different ways as well as provide useful functions 
 #' related to unidimensional IRT.
 #'
-#' For the item parameter estimation, the marginal maximum likelihood estimation via expectation-maximization (MMLE-EM) algorithm
+#' For the item parameter estimation, the marginal maximum likelihood estimation via the expectation-maximization (MMLE-EM) algorithm
 #' (Bock & Aitkin, 1981) is used. For the online calibration, the fixed item parameter calibration (FIPC) method (Kim, 2006) and 
 #' the fixed ability parameter calibration (FAPC) method, (Ban, Hanson, Wang, Yi, & Harris, 2001; stocking, 1988),
 #' often called Stocking's Method A, are provided. For the ability estimation, several popular scoring methods (e.g., MLE, EAP, and MAP) 
@@ -23,8 +23,8 @@
 #' of abilities, computing item and test information functions, computing item and test characteristic curve functions, and 
 #' plotting item and test characteristic curves and item and test information functions.
 #'
-#' \tabular{ll}{ Package: \tab irtplay\cr Version: \tab 1.6.3\cr Date: \tab
-#' 2021-11-04\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
+#' \tabular{ll}{ Package: \tab irtplay\cr Version: \tab 1.6.4\cr Date: \tab
+#' 2021-11-18\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
 #'
 #' @details
 #' Following five sections describe a) how to implement the online item calibration using FIPC, a) how to implement the online item
