@@ -138,21 +138,21 @@
 #' form or to the common items shared between different test forms. 
 #' 
 #' The goal of the MG item calibration is to estimate the item parameters and the latent ability distributions of the multiple groups 
-#' simultaneously (Bock & Zimowski, 1996). In the \pkg{irtplay} package, the \code{\link{est_mg} function supports the MG item calibration
+#' simultaneously (Bock & Zimowski, 1996). In the \pkg{irtplay} package, the \code{\link{est_mg}} function supports the MG item calibration
 #' using the marginal maximum likelihood estimation via the expectation-maximization (MMLE-EM) algorithm (Bock & Aitkin, 1981). In addition, 
 #' The function also supports the MG fixed item parameter calibration (MG-FIPC; e.g., Kim & Kolen, 2016) if the parameters of certain items 
 #' need to be fixed across multiple test forms,  
 #' 
 #' In MG IRT analyses, it is commonly seen that the test forms of multiple groups share some common (or anchor) items between the groups. 
 #' By default the common items that have the same item IDs between different groups are automatically constrained so that they can have the same 
-#' item parameter estimates across the groups in the code{\link{est_mg} function.
+#' item parameter estimates across the groups in the code{\link{est_mg}} function.
 #' 
-#' Most of the features of the \code{\link{est_mg} function are similar with those of the \code{\link{est_irt} function. The main difference is 
-#' that several arguments in the \code{\link{est_mg} functions take an object of a list format which contains several internal objects 
+#' Most of the features of the \code{\link{est_mg}} function are similar with those of the \code{\link{est_irt}} function. The main difference is 
+#' that several arguments in the \code{\link{est_mg}} functions take an object of a list format which contains several internal objects 
 #' corresponding to the groups to be analyzed. Those arguments include \code{x}, \code{data}, \code{model}, \code{cats}, \code{item.id}, 
 #' and \code{fix.loc}. 
 #' 
-#' Also, the \code{\link{est_mg} has two new arguments, the \code{group.name} and \code{free.group}. The \code{group.name} is required to
+#' Also, the \code{\link{est_mg}} has two new arguments, the \code{group.name} and \code{free.group}. The \code{group.name} is required to
 #' assign a unique group name to each group. The order of internal objects in the lists provided in the \code{x}, \code{data}, \code{model}, \code{cats}, 
 #' \code{item.id}, and \code{fix.loc} arguments must match that of the group names supplied to the \code{group.name} argument. 
 #' 
@@ -174,7 +174,7 @@
 #' items in Form 1, and the latent ability distributions of the three groups on the same scale of the item bank. To accomplish this task, the unique items in 
 #' Form 1 need to be fixed during the MG-FIPC to link the current MG test data and the item bank. 
 #' 
-#' The \code{\link(est_mg)} function can implement the MG-FIPC by setting \code{fipc = TRUE}. Then, the information of which items are fixed needs 
+#' The \code{\link{est_mg}} function can implement the MG-FIPC by setting \code{fipc = TRUE}. Then, the information of which items are fixed needs 
 #' to be supplied via either of \code{fix.loc} or \code{fix.id}. When utilizing the \code{fix.loc} argument, a list of the locations of the items that are 
 #' fixed in each group test form should be prepared. For example, suppose that three group data are analyzed. For the first group test form, 
 #' the 1st, 3rd, and 5th items are fixed, for the second group test form, the 2nd, 3rd, 4th, and 7th items are fixed, and for the third group test form, 
