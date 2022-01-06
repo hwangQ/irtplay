@@ -15,6 +15,7 @@ catsib(
   n.bin = c(80, 10),
   min.binsize = 3,
   max.del = 0.075,
+  weight.group = c("foc", "ref", "comb"),
   alpha = 0.05,
   missing = NA,
   purify = FALSE,
@@ -31,18 +32,19 @@ catsib(
 }
 \arguments{
 \item{x}{A data frame containing the item metadata (e.g., item parameters, number of categories, models ...). 
-This metadata is required to estimate latent ability parameters, expecially when \code{purify = TRUE}. Default is NULL. 
+This metadata is required to estimate latent ability parameters when \code{score = NULL} or \code{purify = TRUE}. Default is NULL. 
 See \code{\link{est_irt}}, \code{\link{irtfit}}, \code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata.}
 
 \item{data}{A matrix containing examinees' response data for the items in the argument \code{x}. A row and column indicate
 the examinees and items, respectively.}
 
-\item{score}{A vector of examinees' ability estimates. If the abilities are not provided, \code{\link{catsib}} function estimates the abilities before 
-computing RDIF statistics. See \code{\link{est_score}} for more details about scoring methods. Default is NULL.}
+\item{score}{A vector of examinees' ability estimates. If the abilities are not provided, \code{\link{catsib}} function computes the ability 
+estimates before computing CATSIB statistic. See \code{\link{est_score}} for more details about scoring methods. Default is NULL.}
 
-\item{se}{A vector of the standard errors of ability estimates. Default is NULL.}
+\item{se}{A vector of the standard errors of the ability estimates. The standard errors should be ordered in accordance with the order of 
+the ability estimates specified in the \code{score} argument. Default is NULL.}
 
-\item{group}{A numeric or character vector indicating group membership of examinees. The length of vector should the same with the number of rows 
+\item{group}{A numeric or character vector indicating group membership of examinees. The length of vector should the same as the number of rows 
 in the response data matrix.}
 
 \item{focal.name}{A single numeric or character indicating the level of group which corresponds to the focal group. 
@@ -51,11 +53,21 @@ For example, if \code{group = c(0, 1, 0, 1, 1)} and '1' indicates the focal grou
 \item{D}{A scaling factor in IRT models to make the logistic function as close as possible to the normal ogive function (if set to 1.7).
 Default is 1.}
 
-\item{n.bin}{}
+\item{n.bin}{A vector of two positive integer values to set the maximum and minimum numbers of bins (or intervals) on the ability scale. 
+The first and second values indicates the maximum and minimum numbers, respectively. the \code{\link{catsib()}} function automatically starts
+with the maximum number of the bins and to then monitor how many examinees would be eliminated due to the throwing out of sparse cells. 
+If more than 7.5% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
+examinees eliminated from each group becomes less than or equal to 7.5%. Even if the number of examinees eliminated from one or both of the groups
+exceeded 7.5%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10).}
 
-\item{min.binsize}{}
+\item{min.binsize}{A positive integer value to set the minimum size of each bin. To ensure stable statistical estimation, each bin is required 
+to have a minimum number of certain examinees from both the reference and focal groups if it was to be included in the calculation of 
+the CATSIB statistic. All bins with fewer than this minimum number are not used. Default is 3.}
 
-\item{max.del}{}
+\item{max.del}{A numerical value to set the maximum permissible proportion of examinees to be deleted from either the reference or focal groups
+when automatically determining the number of bins on the ability scale. Default is 0.075.}
+
+\item{weight.group}{A single character string indicating a group over which the expectation of CATSIB statistic and the corresponding standard error are computed.}
 
 \item{alpha}{A numeric value to specify significance \eqn{\alpha}-level of the hypothesis test using the RDIF fit statistics.
 Default is .05.}
@@ -64,9 +76,10 @@ Default is .05.}
 
 \item{purify}{A logical value indicating whether a purification process will be implemented or not. Default is FALSE.}
 
-\item{max.iter}{An integer value specifying a maximum number of iterations for the purification process. Default is 10.}
+\item{max.iter}{An positive integer value specifying the maximum number of iterations for the purification process. Default is 10.}
 
-\item{min.resp}{An integer value?? Default is NULL.}
+\item{min.resp}{An positive integer value specifying the minimum number of item responses for an examinee when scores are computed. 
+Default is NULL. See details below for more information.}
 
 \item{method}{A character string indicating a scoring method. Available methods are "MLE" for the maximum likelihood estimation, 
 "MAP" for the maximum a posteriori estimation, and "EAP" for the expected a posteriori estimation. Default method is "MLE".}
@@ -87,27 +100,128 @@ of \code{norm.prior} and \code{nquad}). Ignored if \code{method} is "MLE" or "MA
 
 \item{ncore}{The number of logical CPU cores to use. Default is 1. See \code{\link{est_score}} for details.}
 
-\item{verbose}{A logical value. If TRUE, the progress messages of purification procedure are suppressed. Default is TRUE.#'}
+\item{verbose}{A logical value. If TRUE, the progress messages of purification procedure are suppressed. Default is TRUE.}
 }
 \value{
-
+This function returns a list of four internal objects. The four objects are: 
+\item{no_purify}{A list of several sub-objects containing the results of DIF analysis without a purification procedure. The sub-objects are: 
+    \describe{
+      \item{dif_stat}{A data frame containing the results of CATSIB statistics across all evaluated items. From the first column, each column 
+       indicates item's ID, CATSIB (\emph{beta}) statistic, standard error of the \emph{beta}, standardized \emph{beta}, p-value of the \emph{beta}, 
+       sample size of the reference group, sample size of the focal group, and total sample size, respectively.} 
+      \item{dif_item}{A numeric vector showing potential DIF items flagged by CATSIB statistic.}
+      \item{contingency}{A contingency table of each item used to compute CATSIB statistic.}
+   }
+}
+\item{purify}{A logical value indicating whether the purification process was used.} 
+\item{with_purify}{A list of several sub-objects containing the results of DIF analysis with a purification procedure. The sub-objects are:
+    \describe{
+      \item{dif_stat}{A data frame containing the results of CATSIB statistics across all evaluated items. From the first column, each column 
+       indicates item's ID, CATSIB (\emph{beta}) statistic, standard error of the \emph{beta}, standardized \emph{beta}, p-value of the \emph{beta}, 
+       sample size of the reference group, sample size of the focal group, and total sample size, and \emph{n}th iteration where the CATSIB statistic 
+       was computed, respectively.} 
+      \item{dif_item}{A numeric vector showing potential DIF items flagged by CATSIB statistic.}
+      \item{n.iter}{A total number of iterations implemented for the purification.}
+      \item{complete}{A logical value indicating whether the purification process was completed. If FALSE, it means that the purification process 
+       reached the maximum iteration number but it was not complete.}
+      \item{contingency}{A contingency table of each item used to compute CATSIB statistic.}
+    }
+}
+\item{alpha}{A significance \eqn{\alpha}-level used to compute the p-values of RDIF statistics.}
 }
 \description{
-This function analyze DIF on items using CATSIB method
+This function analyze DIF on items using CATSIB procedure (Nandakumar & Roussos, 2004), which is a modified 
+version of SIBTEST (Shealy & Stout, 1993).
 }
 \details{
-
+See Nandakumar and Roussos (2004) for more detail about the CATSIB method.
 }
 \examples{
+\donttest{
+# call library
+library("dplyr")
 
+## Uniform DIF detection 
+###############################################
+# (1) manipulate true uniform DIF data
+###############################################
+# import the "-prm.txt" output file from flexMIRT
+flex_sam <- system.file("extdata", "flexmirt_sample-prm.txt", package = "irtplay")
+
+# select 36 of 3PLM items which are non-DIF items 
+par_nstd <- 
+  bring.flexmirt(file=flex_sam, "par")$Group1$full_df \%>\% 
+  dplyr::filter(.data$model == "3PLM") \%>\% 
+  dplyr::filter(dplyr::row_number() \%in\% 1:36) \%>\% 
+  dplyr::select(1:6)
+par_nstd$id <- paste0("nondif", 1:36)
+
+# generate four new items to inject uniform DIF
+difpar_ref <- 
+  shape_df(par.dc=list(a=c(0.8, 1.5, 0.8, 1.5), b=c(0.0, 0.0, -0.5, -0.5), g=0.15), 
+           item.id=paste0("dif", 1:4), cats=2, model="3PLM")
+
+# manipulate uniform DIF on the four new items by adding constants to b-parameters 
+# for the focal group
+difpar_foc <- 
+  difpar_ref \%>\% 
+  dplyr::mutate_at(.vars="par.2", .funs=function(x) x + rep(0.7, 4))
+
+# combine the 4 DIF and 36 non-DIF items for both reference and focal groups
+# thus, the first four items have uniform DIF 
+par_ref <- rbind(difpar_ref, par_nstd)
+par_foc <- rbind(difpar_foc, par_nstd)
+
+# generate the true thetas
+set.seed(123)
+theta_ref <- rnorm(500, 0.0, 1.0)
+theta_foc <- rnorm(500, 0.0, 1.0)
+
+# generate the response data
+resp_ref <- simdat(par_ref, theta=theta_ref, D=1)
+resp_foc <- simdat(par_foc, theta=theta_foc, D=1)
+data <- rbind(resp_ref, resp_foc)
+
+###############################################
+# (2) estimate the item and ability parameters 
+#     using the aggregate data
+###############################################
+# estimate the item parameters 
+est_mod <- est_irt(data=data, D=1, model="3PLM")
+est_par <- est_mod$par.est
+
+# estimate the ability parameters using MLE
+theta_est <- est_score(x=est_par, data=data, method="MLE")
+score <- theta_est$est.theta
+se <- theta_est$se.theta
+
+###############################################
+# (3) conduct DIF analysis
+###############################################
+# create a vector of group membership indicators 
+# where '1' indicates the focal group 
+group <- c(rep(0, 500), rep(1, 500))
+
+# (a)-1 compute SIBTEST statistic by providing scores, 
+#       and without a purification 
+dif_1 <- catsib(x=NULL, data=data, D=1, score=score, se=se, group=group, focal.name=1,
+ weight.group="comb", alpha=0.05, missing=NA, purify=FALSE)
+print(dif_1)
+
+# (a)-2 compute SIBTEST statistic by providing scores, 
+#       and with a purification 
+dif_2 <- catsib(x=est_par, data=data, D=1, score=score, se=se, group=group, focal.name=1,
+ weight.group="comb", alpha=0.05, missing=NA, purify=TRUE)
+dif_2$no_purify$dif_stat
+
+}
 
 }
 \references{
-Lim, H., Edison, M. Choe., Han, K. T., Lee, S., & Hong, M. (2021, June). \emph{IRT residual approach 
-to detecting DIF.} Paper presented at the Annual Meeting of the National Council on Measurement 
-in Education. Online.
 Nandakumar, R., & Roussos, L. (2004). Evaluation of the CATSIB DIF procedure in a pretest setting. 
 \emph{Journal of Educational and Behavioral Statistics, 29}(2), 177-199.
+Shealy, R., & Stout, W. (1993). A model-based standardization approach that separates true bias/DIF from group 
+ability differences and detects test bias/DTF as well as item bias/DIF. \emph{Psychometrika}, 58, 159-194.
 }
 \seealso{
 \code{\link{rdif}}, \code{\link{est_item}}, \code{\link{test.info}}, \code{\link{simdat}}, 
