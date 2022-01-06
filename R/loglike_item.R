@@ -260,9 +260,10 @@ loglike_plm <- function(item_par, r_i, theta, pmodel=c("GRM", "GPCM"), D=1, fix.
     ps <- plm(theta, a=a.val, d=item_par, D=D, pmodel=pmodel)
 
     # compute loglikelihood
-    log_ps <- log(ps)
+    log_ps <- suppressWarnings(log(ps))
 
     # to prevent that log(p) and log(q) have -Inf values
+    log_ps <- ifelse(is.nan(log_ps), log(1e-20), log_ps)
     log_ps <- ifelse(is.infinite(log_ps), log(1e-20), log_ps)
 
     # log-likelihood

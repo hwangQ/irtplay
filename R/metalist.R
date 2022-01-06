@@ -2,7 +2,8 @@
 #' @import purrr
 metalist2 <- function(x) {
 
-  # chagne all factor variables into character variables
+  # change all factor variables into character variables
+  x <- data.frame(x, stringsAsFactors = FALSE)
   x <- purrr::modify_if(x, is.factor, as.character)
   x[, 3] <- toupper(x[, 3])
 

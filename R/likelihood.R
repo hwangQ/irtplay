@@ -49,8 +49,9 @@ likelihood <- function(meta, data1_drm=NULL, data2_drm=NULL, data_plm=NULL, thet
     }
     prob.plm <- do.call(prob.plm, what='cbind')
 
-    # to prevent that log(prob.plm) have -Inf values
-    log_prob.plm <- log(prob.plm)
+    # to prevent that log(prob.plm) have NaN or -Inf values
+    log_prob.plm <- suppressWarnings(log(prob.plm))
+    log_prob.plm <- ifelse(is.nan(log_prob.plm), log(1e-20), log_prob.plm)
     log_prob.plm <- ifelse(is.infinite(log_prob.plm), log(1e-20), log_prob.plm)
 
     # compute the loglikelihood values for all examinees at each quadrature point
