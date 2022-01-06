@@ -2,15 +2,59 @@
 % Please edit documentation in R/rdif.R
 \name{rdif}
 \alias{rdif}
+\alias{rdif.default}
+\alias{rdif.est_irt}
+\alias{rdif.est_item}
 \title{IRT residual-based DIF (RDIF) detection framework}
 \usage{
-rdif(
+rdif(x, ...)
+
+\method{rdif}{default}(
   x,
   data,
   score = NULL,
   group,
   focal.name,
   D = 1,
+  alpha = 0.05,
+  missing = NA,
+  purify = FALSE,
+  purify.by = c("rdif_rs", "rdif_r", "rdif_s"),
+  max.iter = 10,
+  min.resp = NULL,
+  method = "MLE",
+  range = c(-4, 4),
+  norm.prior = c(0, 1),
+  nquad = 41,
+  weights = NULL,
+  ncore = 1,
+  verbose = TRUE
+)
+
+\method{rdif}{est_irt}(
+  x,
+  score = NULL,
+  group,
+  focal.name,
+  alpha = 0.05,
+  missing = NA,
+  purify = FALSE,
+  purify.by = c("rdif_rs", "rdif_r", "rdif_s"),
+  max.iter = 10,
+  min.resp = NULL,
+  method = "MLE",
+  range = c(-4, 4),
+  norm.prior = c(0, 1),
+  nquad = 41,
+  weights = NULL,
+  ncore = 1,
+  verbose = TRUE
+)
+
+\method{rdif}{est_item}(
+  x,
+  group,
+  focal.name,
   alpha = 0.05,
   missing = NA,
   purify = FALSE,
@@ -59,7 +103,7 @@ are "rdif_rs" for \eqn{RDIF_{RS}}, "rdif_r" for \eqn{RDIF_{R}}, and "rdif_s" for
 
 \item{max.iter}{An positive integer value specifying the maximum number of iterations for the purification process. Default is 10.}
 
-\item{min.resp}{An positive integer value specifying the minimum number of item responses for an examinee when scoring is conducted. 
+\item{min.resp}{An positive integer value specifying the minimum number of item responses for an examinee when scores are computed. 
 Default is NULL. See details below for more information.}
 
 \item{method}{A character string indicating a scoring method. Available methods are "MLE" for the maximum likelihood estimation, 
@@ -90,7 +134,7 @@ This function returns a list of four internal objects. The four objects are:
       \item{dif_stat}{A data frame containing the results of three RDIF statistics across all evaluated items. From the first column, each column 
        indicates item's ID, \eqn{RDIF_{R}} statistic, standardized \eqn{RDIF_{R}}, \eqn{RDIF_{S}} statistic, standardized, \eqn{RDIF_{S}}, 
        \eqn{RDIF_{RS}} statistic, p-value of the \eqn{RDIF_{R}}, p-value of the \eqn{RDIF_{S}}, p-value of the \eqn{RDIF_{RS}}, sample size of 
-       the focal group, sample size of the reference group, and total sample size, respectively. Note that \eqn{RDIF_{RS}} does not have its standardized 
+       the reference group, sample size of the focal group, and total sample size, respectively. Note that \eqn{RDIF_{RS}} does not have its standardized 
        value because it is a \eqn{\chi^{2}} statistic.} 
       \item{moments}{A data frame containing the moments of three RDIF statistics. From the first column, each column indicates item's ID, 
        mean of \eqn{RDIF_{R}}, standard deviation of \eqn{RDIF_{R}}, mean of \eqn{RDIF_{S}}, standard deviation of \eqn{RDIF_{S}}, and
@@ -108,14 +152,14 @@ This function returns a list of four internal objects. The four objects are:
       \item{dif_stat}{A data frame containing the results of three RDIF statistics across all evaluated items. From the first column, each column 
        indicates item's ID, \eqn{RDIF_{R}} statistic, standardized \eqn{RDIF_{R}}, \eqn{RDIF_{S}} statistic, standardized, \eqn{RDIF_{S}}, 
        \eqn{RDIF_{RS}} statistic, p-value of the \eqn{RDIF_{R}}, p-value of the \eqn{RDIF_{S}}, p-value of the \eqn{RDIF_{RS}}, sample size of 
-       the focal group, sample size of the reference group, total sample size, and \emph{n}th iteration where the RDIF statistics were computed, 
+       the reference group, sample size of the focal group, total sample size, and \emph{n}th iteration where the RDIF statistics were computed, 
        respectively.}
       \item{moments}{A data frame containing the moments of three RDIF statistics. From the first column, each column indicates item's ID, 
        mean of \eqn{RDIF_{R}}, standard deviation of \eqn{RDIF_{R}}, mean of \eqn{RDIF_{S}}, standard deviation of \eqn{RDIF_{S}}, covariance 
        of \eqn{RDIF_{R}} and \eqn{RDIF_{S}}, and \emph{n}th iteration where the RDIF statistics were computed, respectively.}
       \item{dif_item}{A list of three numeric vectors showing potential DIF items flagged by each of the RDIF statistics. Each of the numeric vector 
        means the items flagged by \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, respectively.}
-      \item{n.iter}{A total number of iterations repleated for the purification.}
+      \item{n.iter}{A total number of iterations implemented for the purification.}
       \item{score}{A vector of final purified ability estimates used to compute the RDIF statistics.}
       \item{complete}{A logical value indicating whether the purification process was completed. If FALSE, it means that the purification process 
        reached the maximum iteration number but it was not complete.}
@@ -166,6 +210,15 @@ whose tally of item responses are less than the specified minimum number are tre
 their ability estimates become missing values and are not used for computing the RDIF statistics. If \code{min.resp=NULL}, 
 an examinee's score will be computed as long as there exists, at least, 1 item response for the examinee.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{default}: Default method to computes three RDIF statistics using a data frame \code{x} containing the item metadata.
+
+\item \code{est_irt}: An object created by the function \code{\link{est_irt}}.
+
+\item \code{est_item}: An object created by the function \code{\link{est_item}}.
+}}
+
 \examples{
 \donttest{
 # call library
