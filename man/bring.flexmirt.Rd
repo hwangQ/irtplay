@@ -20,12 +20,6 @@ bring.bilog(file, type = c("par", "sco"))
 bring.parscale(file, type = c("par", "sco"))
 
 bring.mirt(x)
-
-bring.bilog(file, type = c("par", "sco"))
-
-bring.parscale(file, type = c("par", "sco"))
-
-bring.mirt(x)
 }
 \arguments{
 \item{file}{A file name (including a directory) containing the item or ability parameters.}
