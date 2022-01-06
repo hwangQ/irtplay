@@ -1,4 +1,71 @@
 #' @export
+print.catsib <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
+  
+  call.expr <- deparse(x$call)
+  cat("\nCall:\n", paste(call.expr, sep = "\n", collapse = "\n"),
+      "\n\n", sep = "")
+  
+  # re-organize the dit stats data.frame
+  dif_stat_nopurify <- 
+    x$no_purify$dif_stat %>% 
+    dplyr::select(.data$id, .data$n.ref, .data$n.foc, .data$n.total, 
+                  .data$beta, .data$se, .data$z.beta, 
+                  .data$p.val) %>% 
+    dplyr::mutate_at(.vars = 5:8, round, digits = 3) %>% 
+    dplyr::mutate(" "=stats::symnum(.data$p.val, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                    symbols = c("***", "**", "*", ".", ""))) 
+  
+  # check if purification is used
+  purify <- x$purify
+  if(purify) {
+    complete <- x$with_purify$complete
+    n.iter <- x$with_purify$n.iter
+    
+    # re-organize the dit stats data.frame
+    dif_stat_purify <- 
+      x$with_purify$dif_stat %>% 
+      dplyr::select(.data$id, .data$n.iter, .data$n.ref, .data$n.foc, .data$n.total, 
+                    .data$beta, .data$se, .data$z.beta, .data$p.val) %>% 
+      dplyr::mutate_at(.vars = 6:9, round, digits = 3) %>% 
+      dplyr::mutate(" "=stats::symnum(.data$p.val, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+                                      symbols = c("***", "**", "*", ".", "")))
+    
+  }
+  
+  ## print the results 
+  cat("DIF analysis using CATSIB method", "\n\n")
+  
+  cat(" 1. Without purification \n\n")
+  cat("  - Potential DIF Items: \n")
+  cat("   ", paste(x$no_purify$dif_item, collapse=", "), "\n")
+  cat("  - Test Statistic: \n\n")
+  print(dif_stat_nopurify, digits=3, print.gap=NULL, quote=FALSE)
+  cat("\n")
+  cat("'***'p < 0.001 '**'p < 0.01 '*'p < 0.05 '.'p < 0.1 ' 'p < 1 ", 
+      "\n")
+  cat("Significance level:", x$alpha, "\n\n\n")
+  
+  cat(" 2. With purification \n\n")
+  if(!purify) {
+    cat("  - Purification was not implemented.", "\n\n")
+  } else {
+    cat("  - Completion of purification: ", complete,  "\n", sep="")
+    cat("  - Number of iterations: ", n.iter,  "\n", sep="")
+    cat("  - Potential DIF Items: \n", sep="")
+    cat("   ", paste(x$with_purify$dif_item , collapse=", "), "\n")
+    cat("  - Test Statistic: \n\n")
+    print(dif_stat_purify, digits=3, print.gap=NULL, quote=FALSE)
+    cat("\n")
+    cat("'***'p < 0.001 '**'p < 0.01 '*'p < 0.05 '.'p < 0.1 ' 'p < 1 ", 
+        "\n")
+    cat("Significance level:", x$alpha, "\n\n")
+  }
+  
+  invisible(x)
+  
+}
+
+#' @export
 print.summary.est_mg <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
   
   cat("\nCall:\n", paste(x$call.expr, sep = "\n", collapse = "\n"),
@@ -156,7 +223,7 @@ print.rdif <- function(x, digits = max(2L, getOption("digits") - 5L), ...) {
     cat("  - Completion of purification: ", complete,  "\n", sep="")
     cat("  - Number of iterations: ", n.iter,  "\n", sep="")
     cat("  - RDIF statistic used for purification: ", purify.stat, "\n", sep="")
-    cat("  - DIF Items identified by ", purify.stat, " : \n", sep="")
+    cat("  - DIF Items identified by ", purify.stat, ": \n", sep="")
     cat("   ", paste(x$with_purify$dif_item , collapse=", "), "\n")
     cat("  - RDIF Statistics: \n\n")
     print(dif_stat_purify, digits=3, print.gap=NULL, quote=FALSE)
