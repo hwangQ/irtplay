@@ -1,7 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# irtplay\_1.6.4 (2021-11-22)
+# irtplay\_1.6.4 (2022-01-05)
+
+o added a beta version of new function, ‘catsib()’, for computing CATSIB
+statistic (Nandakumar & Roussos, 2004) to detect DIF on items in CAT.
 
 o added a new function, ‘est\_mg()’, for the multiple group (MG) item
 calibration (Bock & Zimowski, 1997). The new function also supports the
