@@ -24,7 +24,7 @@
 #' plotting item and test characteristic curves and item and test information functions.
 #'
 #' \tabular{ll}{ Package: \tab irtplay\cr Version: \tab 1.6.4\cr Date: \tab
-#' 2021-11-18\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
+#' 2022-01-05\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
 #'
 #' @details
 #' Following five sections describe a) how to implement the online item calibration using FIPC, a) how to implement the online item
