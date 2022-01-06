@@ -268,12 +268,62 @@ For dichotomous items, IRT one-, two-, and three-parameter logistic models are a
 model (GRM) and the (generalized) partial credit model (GPCM) are available.
 }
 \details{
+The multiple-group (MG) item calibration (Bock & Zimowski, 1996) provides a unified approach to the testing situations or 
+problems involving multiple groups such as nonequivalent groups equating, vertical scaling, and identification of differential
+item functioning (DIF). In such contexts, typically there exist test takers from different groups responding to the same test
+form or to the common items shared between different test forms. 
 
+The goal of the MG item calibration is to estimate the item parameters and the latent ability distributions of the multiple groups 
+simultaneously (Bock & Zimowski, 1996). In the \pkg{irtplay} package, the \code{\link{est_mg}} function supports the MG item calibration
+using the marginal maximum likelihood estimation via the expectation-maximization (MMLE-EM) algorithm (Bock & Aitkin, 1981). In addition, 
+The function also supports the MG fixed item parameter calibration (MG-FIPC; e.g., Kim & Kolen, 2016) if the parameters of certain items 
+need to be fixed across multiple test forms,  
+
+In MG IRT analyses, it is commonly seen that the test forms of multiple groups share some common (or anchor) items between the groups. 
+By default the common items that have the same item IDs between different groups are automatically constrained so that they can have the same 
+item parameter estimates across the groups in the code{\link{est_mg}} function.
+
+Most of the features of the \code{\link{est_mg}} function are similar with those of the \code{\link{est_irt}} function. The main difference is 
+that several arguments in the \code{\link{est_mg}} functions take an object of a list format which contains several internal objects 
+corresponding to the groups to be analyzed. Those arguments include \code{x}, \code{data}, \code{model}, \code{cats}, \code{item.id}, 
+and \code{fix.loc}. 
+
+Also, the \code{\link{est_mg}} has two new arguments, the \code{group.name} and \code{free.group}. The \code{group.name} is required to
+assign a unique group name to each group. The order of internal objects in the lists provided in the \code{x}, \code{data}, \code{model}, \code{cats}, 
+\code{item.id}, and \code{fix.loc} arguments must match that of the group names supplied to the \code{group.name} argument. 
+
+The \code{free.group} argument is necessary to indicate the freed groups in which scales (i.e., a mean and standard deviation) of the latent ability 
+distributions are estimated. When no item parameters are fixed (i.e., \code{fipc = FALSE}), at least one group should have a fixed scale 
+(e.g., a mean of 0 and variance of 1) of the latent ability distribution among the multiple groups that shares common items in order to  
+solve the scale indeterminancy in IRT estimation. By providing which are the freed groups into the \code{free.group} argument, the scales 
+of the groups specified in the \code{free.group} argument are freely estimated while the scales of all other groups not specified 
+in the argument are fixed based on the information provided in the \code{group.mean} and \code{group.var} arguments or 
+the \code{weights} argument.   
+
+The situations where the implementation of MG-FIPC is necessary arise when the new latent ability scales from MG test data are linked 
+to the established scale (e.g., the scale of an item bank). In a single run of MG-FIPC method, all the parameters of freed items across multiple test 
+forms and the density of the latent ability distributions for multiple groups can be estimated on the scale of the fixed items (Kim & Kolen, 2016). 
+Suppose that three different test forms, Form 1, Form 2, and Form 3, are administered to three nonequivalent groups, Group1, Group2, and Group3. 
+Form 1 and Form 2 share 12 common items, C1I1 to C1I12, and Form 2 and Form 3 share 10 common items, C2I1 to C2I10, while there is no common item 
+between Form 1 and Form 3. Also, suppose that all unique items of Form 1 came from an item bank, which were already calibrated on the scale of 
+the item bank. In this case, the goal of the MG-FIPC is to estimate the parameters of all the items across the three test forms, except the unique 
+items in Form 1, and the latent ability distributions of the three groups on the same scale of the item bank. To accomplish this task, the unique items in 
+Form 1 need to be fixed during the MG-FIPC to link the current MG test data and the item bank. 
+
+The \code{\link{est_mg}} function can implement the MG-FIPC by setting \code{fipc = TRUE}. Then, the information of which items are fixed needs 
+to be supplied via either of \code{fix.loc} or \code{fix.id}. When utilizing the \code{fix.loc} argument, a list of the locations of the items that are 
+fixed in each group test form should be prepared. For example, suppose that three group data are analyzed. For the first group test form, 
+the 1st, 3rd, and 5th items are fixed, for the second group test form, the 2nd, 3rd, 4th, and 7th items are fixed, and for the third group test form, 
+the 1st, 2nd, and 6th items are fixed. Then \code{fix.loc = list(c(1, 3, 5), c(2, 3, 4, 7), c(1, 2, 6))}. Instead of using the \code{fix.loc}, the \code{fix.id}
+argument can be used by providing a vector of the IDs of the items to be fixed. Again suppose that the three group data are analyzed. For the first group 
+test form, the three items in which IDs are G1I1, C1I1, are C1I2 are fixed. For the second group test form, the four items in which IDs are C1I1, C1I2, C2I1, 
+and C2I2 are fixed. For the third group test form, the three items in which IDs are C2I1, C2I2, and G3I1 are fixed. Then there are six unique items to 
+be fixed across the three groups (i.e., G1I1, C1I1, C1I2, C2I1, C2I2, and G3I1) because C1I1 and C1I2 are common items between the first and the second groups, 
+and C2I1 and C2I2 are common items between the second and the third groups. Thus, \code{fix.id = c("G1I1", "C1I1", "C1I2", "C2I1", "C2I2", "G3I1")} should be 
+set. Note that when the information of item IDs supplied in the \code{fix.id} argument overrides the information provided into the \code{fix.loc} argument.
 }
 \examples{
-
 \donttest{
-
 ##------------------------------------------------------------------------------
 # 1. MG-calibration using simMG data
 #  - Details :

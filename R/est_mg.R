@@ -264,9 +264,7 @@
 #' Woods, C. M. (2007). Empirical histograms in item response theory with ordinal data. \emph{Educational and Psychological Measurement, 67}(1), 73-87.
 #'
 #' @examples
-#' 
 #' \donttest{
-#'
 #' ##------------------------------------------------------------------------------
 #' # 1. MG-calibration using simMG data
 #' #  - Details :
