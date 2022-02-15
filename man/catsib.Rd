@@ -56,9 +56,9 @@ Default is 1.}
 \item{n.bin}{A vector of two positive integer values to set the maximum and minimum numbers of bins (or intervals) on the ability scale. 
 The first and second values indicates the maximum and minimum numbers, respectively. the \code{\link{catsib()}} function automatically starts
 with the maximum number of the bins and to then monitor how many examinees would be eliminated due to the throwing out of sparse cells. 
-If more than 7.5% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
-examinees eliminated from each group becomes less than or equal to 7.5%. Even if the number of examinees eliminated from one or both of the groups
-exceeded 7.5%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10).}
+If more than 7.5\% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
+examinees eliminated from each group becomes less than or equal to 7.5\%. Even if the number of examinees eliminated from one or both of the groups
+exceeded 7.5\%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10).}
 
 \item{min.binsize}{A positive integer value to set the minimum size of each bin. To ensure stable statistical estimation, each bin is required 
 to have a minimum number of certain examinees from both the reference and focal groups if it was to be included in the calculation of 

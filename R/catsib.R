@@ -21,9 +21,9 @@
 #' @param n.bin A vector of two positive integer values to set the maximum and minimum numbers of bins (or intervals) on the ability scale. 
 #' The first and second values indicates the maximum and minimum numbers, respectively. the \code{\link{catsib()}} function automatically starts
 #' with the maximum number of the bins and to then monitor how many examinees would be eliminated due to the throwing out of sparse cells. 
-#' If more than 7.5% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
-#' examinees eliminated from each group becomes less than or equal to 7.5%. Even if the number of examinees eliminated from one or both of the groups
-#' exceeded 7.5%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10). 
+#' If more than 7.5\% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
+#' examinees eliminated from each group becomes less than or equal to 7.5\%. Even if the number of examinees eliminated from one or both of the groups
+#' exceeded 7.5\%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10). 
 #' @param min.binsize A positive integer value to set the minimum size of each bin. To ensure stable statistical estimation, each bin is required 
 #' to have a minimum number of certain examinees from both the reference and focal groups if it was to be included in the calculation of 
 #' the CATSIB statistic. All bins with fewer than this minimum number are not used. Default is 3.
@@ -509,8 +509,10 @@ catsib_one <- function(data, group, focal.name, score, se, range,
   sigma2_foc <- stats::var(score_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
   
   # compute the error variance of scores for each group
-  errvar_ref <- stats::var(se_ref[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
-  errvar_foc <- stats::var(se_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
+  # errvar_ref <- stats::var(se_ref[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
+  # errvar_foc <- stats::var(se_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
+  errvar_ref <- mean(se_ref[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
+  errvar_foc <- mean(se_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
   
   # compute the squared correlation (a.k.a. reliability) between theta estimate and true theta 
   # rho_ref <- suppressWarnings(sqrt(1 - se_ref^2 / sigma2_ref))
