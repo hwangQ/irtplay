@@ -511,8 +511,8 @@ catsib_one <- function(data, group, focal.name, score, se, range,
   # compute the error variance of scores for each group
   # errvar_ref <- stats::var(se_ref[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
   # errvar_foc <- stats::var(se_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
-  errvar_ref <- mean(se_ref[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
-  errvar_foc <- mean(se_foc[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
+  errvar_ref <- mean((se_ref^2)[score_ref > lb_score & score_ref < up_score], na.rm=TRUE)
+  errvar_foc <- mean((se_foc^2)[score_foc > lb_score & score_foc < up_score], na.rm=TRUE)
   
   # compute the squared correlation (a.k.a. reliability) between theta estimate and true theta 
   # rho_ref <- suppressWarnings(sqrt(1 - se_ref^2 / sigma2_ref))
