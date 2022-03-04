@@ -239,7 +239,6 @@
 #' print(dif_puri_rs)
 #' }
 #' 
-#' @export
 rdif2 <- function(x, data, score=NULL, se=NULL, reg.cr=FALSE, level.rel="group", group, 
                   focal.name, D=1, alpha=0.05, missing=NA, purify=FALSE, 
                   purify.by=c("rdif_rs", "rdif_r", "rdif_s"), max.iter=10, min.resp=NULL, method="MLE", 
