@@ -5,7 +5,7 @@
 \alias{rdif.default}
 \alias{rdif.est_irt}
 \alias{rdif.est_item}
-\title{IRT residual-based DIF (RDIF) detection framework}
+\title{IRT residual-based DIF (RDIF) detection framework2}
 \usage{
 rdif(x, ...)
 
@@ -168,18 +168,18 @@ This function returns a list of four internal objects. The four objects are:
 \item{alpha}{A significance \eqn{\alpha}-level used to compute the p-values of RDIF statistics.}
 }
 \description{
-This function computes three RDIF statistics (Lim, Choe, & Han, Under review; Lim, Choe, Han, Lee, & Hong, 2021), 
+This function computes three RDIF statistics (Lim, Choe, & Han, 2022; Lim, Choe, Han, Lee, & Hong, 2021), 
 which are \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, for each item. \eqn{RDIF_{R}} primarily 
 captures the typical contrast in raw residual pattern between two groups caused by uniform DIF whereas 
 \eqn{RDIF_{S}} primarily captures the typical contrast in squared residual pattern between two groups caused
 by nonuniform DIF. \eqn{RDIF_{RS}} can reasonably capture both types of DIF.
 }
 \details{
-The RDIF framework (Lim et al., Under review; Lim et al., 2021) consists of three IRT residual-based statistics: \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, 
+The RDIF framework (Lim et al., 2022; Lim et al., 2021) consists of three IRT residual-based statistics: \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, 
 and \eqn{RDIF_{RS}}. Under the null hypothesis that a test contains no DIF items, \eqn{RDIF_{R}} and \eqn{RDIF_{S}} follow 
 normal distributions asymptotically. \eqn{RDIF_{RS}} is a based on a bivariate normal distribution of \eqn{RDIF_{R}} and 
 \eqn{RDIF_{S}} statistics. Under the null hypothesis of no DIF items, it follows a \eqn{\chi^{2}} distribution asymptotically 
-with 2 degrees of freedom. See Lim et al. (2021) for more details about RDIF framework. 
+with 2 degrees of freedom. See Lim et al. (2022) for more details about RDIF framework. 
 
 The \code{\link{rdif}} function computes all three RDIF statistics of \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}. The current 
 version of \code{\link{rdif}} function only supports dichotomous item response data. To compute the three statistics, the \code{\link{rdif}} function 
@@ -200,11 +200,11 @@ As other DIF detection approaches, an iterative purification process can be impl
 When \code{purify = TRUE}, the purification process is implemented based on one of RDIF statistics specified in the \code{purify.by} 
 argument (e.g, \code{purify.by="rdif_rs"}). At each iterative purification, examinees' latent abilities are computed using purified items and 
 scoring method specified in the \code{method} argument. The iterative purification process stops when no further DIF items are found or 
-the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument. See Lim et al. (2021) 
+the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument. See Lim et al. (2022) 
 for more details about the purification procedure.
 
 Scoring with a few items entails large standard errors which in turn could compromise DIF detection with RDIF framework. 
-The \code{min.resp} argument can be used to avoid using scores with large standard errors when computing the RDIF statistics, espeically 
+The \code{min.resp} argument can be used to avoid using scores with large standard errors when computing the RDIF statistics, especially 
 during the purification process. For example, if \code{min.resp} is not NULL (e.g., \code{min.resp=5}), item responses of examinees 
 whose tally of item responses are less than the specified minimum number are treated as missing values (i.e., NA). Accordingly, 
 their ability estimates become missing values and are not used for computing the RDIF statistics. If \code{min.resp=NULL}, 
@@ -320,7 +320,7 @@ print(dif_puri_rs)
 
 }
 \references{
-Lim, H., Choe, E. M., & Han, K. T. (Under review). A residual-based differential item functioning detection framework in 
+Lim, H., Choe, E. M., & Han, K. T. (2022). A residual-based differential item functioning detection framework in 
 item response theory. \emph{Journal of Educational Measurement}. 
 
 Lim, H., Choe, E. M., Han, K. T., Lee, S., & Hong, M. (2021, June). \emph{IRT residual approach 
