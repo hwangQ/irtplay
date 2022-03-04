@@ -15,7 +15,7 @@ catsib(
   n.bin = c(80, 10),
   min.binsize = 3,
   max.del = 0.075,
-  weight.group = c("foc", "ref", "comb"),
+  weight.group = c("comb", "foc", "ref"),
   alpha = 0.05,
   missing = NA,
   purify = FALSE,
@@ -33,13 +33,14 @@ catsib(
 \arguments{
 \item{x}{A data frame containing the item metadata (e.g., item parameters, number of categories, models ...). 
 This metadata is required to estimate latent ability parameters when \code{score = NULL} or \code{purify = TRUE}. Default is NULL. 
-See \code{\link{est_irt}}, \code{\link{irtfit}}, \code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata.}
+See \code{\link{est_irt}}, \code{\link{irtfit}}, \code{\link{test.info}} or \code{\link{simdat}} for more detail about the item metadata.}
 
-\item{data}{A matrix containing examinees' response data for the items in the argument \code{x}. A row and column indicate
+\item{data}{A matrix containing examinees' response data of the items in the argument \code{x}. A row and column indicate
 the examinees and items, respectively.}
 
-\item{score}{A vector of examinees' ability estimates. If the abilities are not provided, \code{\link{catsib}} function computes the ability 
-estimates before computing CATSIB statistic. See \code{\link{est_score}} for more details about scoring methods. Default is NULL.}
+\item{score}{A vector of examinees' ability estimates. If the abilities are not provided (i.e., \code{score  = NULL}), 
+\code{\link{catsib}} function computes the ability estimates before computing CATSIB statistics. See \code{\link{est_score}} 
+for more detail about scoring methods. Default is NULL.}
 
 \item{se}{A vector of the standard errors of the ability estimates. The standard errors should be ordered in accordance with the order of 
 the ability estimates specified in the \code{score} argument. Default is NULL.}
@@ -53,33 +54,31 @@ For example, if \code{group = c(0, 1, 0, 1, 1)} and '1' indicates the focal grou
 \item{D}{A scaling factor in IRT models to make the logistic function as close as possible to the normal ogive function (if set to 1.7).
 Default is 1.}
 
-\item{n.bin}{A vector of two positive integer values to set the maximum and minimum numbers of bins (or intervals) on the ability scale. 
-The first and second values indicates the maximum and minimum numbers, respectively. the \code{\link{catsib()}} function automatically starts
-with the maximum number of the bins and to then monitor how many examinees would be eliminated due to the throwing out of sparse cells. 
-If more than 7.5\% of either the reference or focal group examinees are eliminated, the function decreases the number of cells until the number of
-examinees eliminated from each group becomes less than or equal to 7.5\%. Even if the number of examinees eliminated from one or both of the groups
-exceeded 7.5\%, the number of bins cannot be lower than the minimum number of bins. Default is c(80, 10).}
+\item{n.bin}{A vector of two positive integers to set the maximum and minimum numbers of bins (or intervals) on the ability scale. 
+The first and second values indicate the maximum and minimum numbers of the bins, respectively. See below for more detail.}
 
 \item{min.binsize}{A positive integer value to set the minimum size of each bin. To ensure stable statistical estimation, each bin is required 
-to have a minimum number of certain examinees from both the reference and focal groups if it was to be included in the calculation of 
-the CATSIB statistic. All bins with fewer than this minimum number are not used. Default is 3.}
+to have a certain number of examinees (e.g, 3), at least, from both reference and focal groups if it was to be included in calculation of \eqn{\hat{\beta}}. 
+All bins with fewer than the minimum number are not used for the computation. Default is 3. See below for more detail.}
 
-\item{max.del}{A numerical value to set the maximum permissible proportion of examinees to be deleted from either the reference or focal groups
-when automatically determining the number of bins on the ability scale. Default is 0.075.}
+\item{max.del}{A numerical value to set the maximum permissible proportion of examinees to be deleted from either reference group or focal group
+when automatically determining the number of bins on the ability scale. Default is 0.075. See below for more detail.}
 
-\item{weight.group}{A single character string indicating a group over which the expectation of CATSIB statistic and the corresponding standard error are computed.}
+\item{weight.group}{A single character string to specify a target ability distribution over which the expectation of DIF measure, called \eqn{\hat{\beta}}, 
+and the corresponding standard error are computed. Available options are "comb" for the combined ability distribution from both the reference and focal groups, 
+"foc" for the ability distribution of the focal group, and "ref" for the ability distribution of the reference group. Defulat is "comb". See below for more detail.}
 
 \item{alpha}{A numeric value to specify significance \eqn{\alpha}-level of the hypothesis test using the RDIF fit statistics.
 Default is .05.}
 
 \item{missing}{A value indicating missing values in the response data set. Default is NA.}
 
-\item{purify}{A logical value indicating whether a purification process will be implemented or not. Default is FALSE.}
+\item{purify}{A logical value indicating whether a purification process will be implemented or not. Default is FALSE. See below for more detail.}
 
 \item{max.iter}{An positive integer value specifying the maximum number of iterations for the purification process. Default is 10.}
 
 \item{min.resp}{An positive integer value specifying the minimum number of item responses for an examinee when scores are computed. 
-Default is NULL. See details below for more information.}
+Default is NULL. See below for more detail.}
 
 \item{method}{A character string indicating a scoring method. Available methods are "MLE" for the maximum likelihood estimation, 
 "MAP" for the maximum a posteriori estimation, and "EAP" for the expected a posteriori estimation. Default method is "MLE".}
@@ -130,11 +129,43 @@ This function returns a list of four internal objects. The four objects are:
 \item{alpha}{A significance \eqn{\alpha}-level used to compute the p-values of RDIF statistics.}
 }
 \description{
-This function analyze DIF on items using CATSIB procedure (Nandakumar & Roussos, 2004), which is a modified 
-version of SIBTEST (Shealy & Stout, 1993).
+This function analyzes DIF on an item using CATSIB procedure (Nandakumar & Roussos, 2004), which is a modified 
+version of SIBTEST (Shealy & Stout, 1993). The CATSIB procedure can be applied to a computerized adaptive testing (CAT) 
+environment for differential item functioning (DIF) detection. In CATSIB, examinees are matched on IRT-based ability 
+estimates adjusted by employing a regression correction method (Shealy & Stout, 1993) to reduce a statistical bias of 
+the CATSIB statistic due to impact.
 }
 \details{
-See Nandakumar and Roussos (2004) for more detail about the CATSIB method.
+In CATSIB procedure (Nandakumar & Roussos, 2004), because \eqn{\hat{\beta}^{\ast}}, which is the expected \eqn{\theta} regressed on \eqn{\hat{\beta}}, 
+is a continuous variable, the range of \eqn{\hat{\beta}^{\ast}} is divided into K equal intervals and examinees are classified into one of K intervals
+on the basis of their \eqn{\hat{\beta}^{\ast}}.Then, any intervals that contain less than three examinees in either reference or focal groups were 
+excluded from the computation of \eqn{\hat{\beta}}, which is a measure of the amount of DIF, to ensure stable statistical estimation. According to
+Nandakumar and Roussos (2004), a default minimum size of each bin is set to 3 in \code{min.binsize}.   
+ 
+To carefully choose the number of intervals (K), the \code{\link{catsib}} automatically determines it by gradually decreasing K from a larger to 
+smaller numbers based the rule used in Nandakumar and Roussos (2004). Specifically, beginning with an arbitrary large number (e.g., 80), 
+if more than a certain permissible percentage, let's say 7.5\%, of examinees in either the reference or focal groups were removed, the \code{\link{catsib}} 
+automatically decreases the number of bins by one unit until a total number of examinees in each group reaches to more than or equal to 92.5\%. 
+However, Nandakumar and Roussos (2004) recommended setting the minimum K to 10 to avoid a situation that extremely a few intervals are left, 
+even if the number of remaining examinees in each group is less than 92.5\%. Thus, the maximum and minimum number of bins are set to 80 and 10, respectively, 
+as default in \code{n.bin}. Also, a default maximum permissible proportion of examinees to be deleted from either reference group or focal group is 
+set to 0.075 in \code{max.del}.
+
+When it comes to the target ability distribution used to compute \eqn{\hat{\beta}}, Li and Stout (1996) and Nandakumar and Roussos (2004) used the combined-group
+target ability distribution, which is a default option in \code{weight.group}. See Nandakumar and Roussos (2004) for more detail about the CATSIB method.
+
+Although Nandakumar and Roussos (2004) did not propose a purification procedure for DIF analysis using CATSIB, the \code{\link{catsib}} can implement an iterative 
+purification process in a similar way as in Lim, Choe, and Han (2022). Simply, at each iterative purification, examinees' latent abilities are computed using 
+purified items and scoring method specified in the \code{method} argument. The iterative purification process stops when no further DIF items are found or 
+the process reaches a predetermined limit of iteration, which can be specified in the \code{max.iter} argument. See Lim et al. (2022) 
+for more details about the purification procedure.
+
+Scoring with a few items entails large standard errors which in turn could compromise DIF detection with CATSIB procedure. 
+The \code{min.resp} argument can be used to avoid using scores with large standard errors when computing \eqn{\hat{\beta}}, especially 
+during the purification process. For example, if \code{min.resp} is not NULL (e.g., \code{min.resp=5}), item responses of examinees 
+whose tally of item responses are less than the specified minimum number are treated as missing values (i.e., NA). Accordingly, 
+their ability estimates become missing values and are not used for computing \eqn{\hat{\beta}}. If \code{min.resp=NULL}, 
+an examinee's score will be computed as long as there exists, at least, 1 item response for the examinee.
 }
 \examples{
 \donttest{
@@ -212,16 +243,22 @@ print(dif_1)
 #       and with a purification 
 dif_2 <- catsib(x=est_par, data=data, D=1, score=score, se=se, group=group, focal.name=1,
  weight.group="comb", alpha=0.05, missing=NA, purify=TRUE)
-dif_2$no_purify$dif_stat
+print(dif_2)
 
 }
 
 }
 \references{
+Li, H. H., & Stout, W. (1996). A new procedure for detection of crossing DIF. \emph{Psychometrika, 61}(4), 647-677.
+
+Lim, H., Choe, E. M., & Han, K. T. (2022). A residual-based differential item functioning detection framework in 
+item response theory. \emph{Journal of Educational Measurement}. 
+
 Nandakumar, R., & Roussos, L. (2004). Evaluation of the CATSIB DIF procedure in a pretest setting. 
 \emph{Journal of Educational and Behavioral Statistics, 29}(2), 177-199.
-Shealy, R., & Stout, W. (1993). A model-based standardization approach that separates true bias/DIF from group 
-ability differences and detects test bias/DTF as well as item bias/DIF. \emph{Psychometrika}, 58, 159-194.
+
+Shealy, R. T., & Stout, W. F. (1993). A model-based standardization approach that separates true bias/DIF 
+from group ability differences and detects test bias/DIF as well as item bias/DIF. \emph{Psychometrika, 58}, 159–194.
 }
 \seealso{
 \code{\link{rdif}}, \code{\link{est_item}}, \code{\link{test.info}}, \code{\link{simdat}}, 
