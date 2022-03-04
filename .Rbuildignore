@@ -6,5 +6,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-R/rdif2.R
 ^CRAN-RELEASE$
+R/rdif2.R
+R/catsib2.R
