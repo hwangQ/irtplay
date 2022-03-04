@@ -55,7 +55,7 @@ irtfit(x, ...)
 \arguments{
 \item{x}{A data frame containing the item metadata (e.g., item parameters, number of categories, models ...), an object of class \code{\link{est_item}}
 obtained from the function \code{\link{est_item}}, or an object of class \code{\link{est_irt}} obtained from the function \code{\link{est_irt}}.
-The data frame of item metadata can be easily obtained using the function \code{\link{shape_df}}. See below for details.}
+The data frame of item metadata can be easily obtained using the function \code{\link{shape_df}}. See below for more detail.}
 
 \item{...}{Further arguments passed to or from other methods.}
 
@@ -71,7 +71,7 @@ always guarantee exactly the same frequency of examinees for all groups. Default
 of ability scale and the number of divided groups must be specified in the arguments of \code{range.score} and \code{n.width}, respectively.
 See below for details.}
 
-\item{n.width}{An integer value to specify the number of divided groups along the ability scale. Default is 10. See below for details.}
+\item{n.width}{An integer value to specify the number of divided groups along the ability scale. Default is 10. See below for more detail.}
 
 \item{loc.theta}{A character string to indicate the location of ability point at each group (or interval) where the expected probabilities
 of score categories are calculated using the IRT models. Available locations are "average" for computing the expected probability
@@ -156,7 +156,7 @@ And an example of a data frame for a mixed-format test is as follows:
   ITEM7  \tab 4 \tab GPCM  \tab 1.137 \tab -0.374 \tab  0.215 \tab  0.848 \tab         NA \cr
   ITEM8  \tab 5 \tab GPCM  \tab 1.233 \tab -2.078 \tab -1.347 \tab -0.705 \tab -0.116
 }
-See \code{IRT Models} section in the page of \code{\link{irtplay-package}} for more details about the IRT models used in the \pkg{irtplay} package. 
+See \code{IRT Models} section in the page of \code{\link{irtplay-package}} for more detail about the IRT models used in the \pkg{irtplay} package. 
 An easier way to create a data frame for the argument \code{x} is by using the function \code{\link{shape_df}}.
 
 To calculate the \eqn{\chi^{2}} and \eqn{G^{2}} fit statistics, two methods are used in the argument \code{group.method} to divide the ability scale
