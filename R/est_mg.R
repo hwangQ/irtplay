@@ -573,11 +573,18 @@ est_mg_em <- function(x=NULL, data, group.name=NULL, D=1, model=NULL, cats=NULL,
   if(!is.null(x)) {
     
     # give column names
+    # x.gr <- purrr::map(.x = x, 
+    #                    .f = function(x) {
+    #                      data.frame(x, stringsAsFactors = FALSE) %>% 
+    #                        dplyr::rename_all(.funs = function(x) {
+    #                          c("id", "cats", "model", paste0("par.", 1:(ncol(.) - 3)))})
+    #                    })
     x.gr <- purrr::map(.x = x, 
                        .f = function(x) {
-                         data.frame(x, stringsAsFactors = FALSE) %>% 
+                         x.tmp <- data.frame(x, stringsAsFactors = FALSE) 
+                         x.tmp %>%
                            dplyr::rename_all(.funs = function(x) {
-                             c("id", "cats", "model", paste0("par.", 1:(ncol(.) - 3)))})
+                             c("id", "cats", "model", paste0("par.", 1:(ncol(x.tmp) - 3)))})
                        })
     names(x.gr) <- group.name
     
@@ -1186,9 +1193,10 @@ est_mg_fipc <- function(x=NULL, data, group.name=NULL, D=1, model=NULL, cats=NUL
   # give column names
   x.gr <- purrr::map(.x = x, 
                      .f = function(x) {
-                       data.frame(x, stringsAsFactors = FALSE) %>% 
+                       x.tmp <- data.frame(x, stringsAsFactors = FALSE) 
+                       x.tmp %>%
                          dplyr::rename_all(.funs = function(x) {
-                           c("id", "cats", "model", paste0("par.", 1:(ncol(.) - 3)))})
+                           c("id", "cats", "model", paste0("par.", 1:(ncol(x.tmp) - 3)))})
                      })
   names(x.gr) <- group.name
   
