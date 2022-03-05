@@ -212,6 +212,7 @@
 #' 
 #' }
 #' 
+#' @import janitor
 #' @export
 #' 
 catsib <- function(x=NULL, data, score=NULL, se=NULL, group, focal.name, D=1, n.bin=c(80, 10), min.binsize=3, max.del=0.075, 
