@@ -43,6 +43,7 @@
 #' of \code{norm.prior} and \code{nquad}). Ignored if \code{method} is "MLE" or "MAP".
 #' @param ncore The number of logical CPU cores to use. Default is 1. See \code{\link{est_score}} for details.
 #' @param verbose A logical value. If TRUE, the progress messages of purification procedure are suppressed. Default is TRUE.
+#' @param ... additional arguments for further updates.
 #'
 #' @details The RDIF framework (Lim et al., 2022; Lim et al., 2021) consists of three IRT residual-based statistics: \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, 
 #' and \eqn{RDIF_{RS}}. Under the null hypothesis that a test contains no DIF items, \eqn{RDIF_{R}} and \eqn{RDIF_{S}} follow 
@@ -239,7 +240,7 @@ rdif <- function(x, ...) UseMethod("rdif")
 #' @export
 rdif.default <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05, missing=NA, purify=FALSE, 
                  purify.by=c("rdif_rs", "rdif_r", "rdif_s"), max.iter=10, min.resp=NULL, method="MLE", 
-                 range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE) {
+                 range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE, ...) {
   
   
   # match.call
@@ -530,7 +531,7 @@ rdif.default <- function(x, data, score=NULL, group, focal.name, D=1, alpha=0.05
 #'
 rdif.est_irt <- function(x, score=NULL, group, focal.name, alpha=0.05, missing=NA, purify=FALSE, 
                          purify.by=c("rdif_rs", "rdif_r", "rdif_s"), max.iter=10, min.resp=NULL, method="MLE", 
-                         range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE) {
+                         range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE, ...) {
   
   
   # match.call
@@ -823,7 +824,7 @@ rdif.est_irt <- function(x, score=NULL, group, focal.name, alpha=0.05, missing=N
 #'
 rdif.est_item <- function(x, group, focal.name, alpha=0.05, missing=NA, purify=FALSE, 
                          purify.by=c("rdif_rs", "rdif_r", "rdif_s"), max.iter=10, min.resp=NULL, method="MLE", 
-                         range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE) {
+                         range=c(-4, 4), norm.prior=c(0, 1), nquad=41, weights=NULL, ncore=1, verbose=TRUE, ...) {
   
   
   # match.call

@@ -28,7 +28,8 @@ rdif(x, ...)
   nquad = 41,
   weights = NULL,
   ncore = 1,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 
 \method{rdif}{est_irt}(
@@ -48,7 +49,8 @@ rdif(x, ...)
   nquad = 41,
   weights = NULL,
   ncore = 1,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 
 \method{rdif}{est_item}(
@@ -67,7 +69,8 @@ rdif(x, ...)
   nquad = 41,
   weights = NULL,
   ncore = 1,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{
@@ -75,6 +78,8 @@ rdif(x, ...)
 obtained from the function \code{\link{est_item}}, or an object of class \code{\link{est_irt}} obtained from the function \code{\link{est_irt}}.
 The data frame of item metadata can be easily obtained using the function \code{\link{shape_df}}. See \code{\link{est_irt}}, \code{\link{irtfit}}, 
 \code{\link{test.info}} or \code{\link{simdat}} for more details about the item metadata.}
+
+\item{...}{additional arguments for further updates.}
 
 \item{data}{A matrix containing examinees' response data for the items in the argument \code{x}. A row and column indicate
 the examinees and items, respectively.}
