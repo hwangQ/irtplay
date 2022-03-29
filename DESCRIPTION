@@ -24,7 +24,7 @@ Description: Fit unidimensional item response theory (IRT) models to a mixture
     data and model-based predictions 
     (Hambleton, Swaminathan, & Rogers (1991, ISBN:9780803936478)). 
     In addition, there are many useful functions such as analyzing differential item 
-    functioning, computing asymptotic variance-covariance matrices of item parameter 
+    functioning (DIF), computing asymptotic variance-covariance matrices of item parameter 
     estimates (Li & Lissitz (2004) <doi:10.1111/j.1745-3984.2004.tb01109.x>), 
     importing item and/or ability parameters from popular IRT software, 
     running 'flexMIRT' (Cai, 2017) through R, generating simulated data, 

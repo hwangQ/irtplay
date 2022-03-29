@@ -24,7 +24,7 @@
 #' plotting item and test characteristic curves and item and test information functions.
 #'
 #' \tabular{ll}{ Package: \tab irtplay\cr Version: \tab 1.6.4\cr Date: \tab
-#' 2022-03-04\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
+#' 2022-03-29\cr Depends: \tab R (>= 3.6)\cr License: \tab GPL (>= 2)\cr }
 #'
 #' @details
 #' Following five sections describe a) how to implement the online item calibration using FIPC, a) how to implement the online item
@@ -481,8 +481,8 @@
 #' Li, Y. & Lissitz, R. (2004). Applications of the analytically derived asymptotic standard errors of item response theory
 #' item parameter estimates. \emph{Journal of educational measurement, 41}(2), 85-117.
 #'
-#' Lim, H., Choe, E. M., & Han, K. T. (Under review). A residual-based differential item functioning detection framework in 
-#' item response theory. \emph{Journal of Educational Measurement}. 
+#' Lim, H., Choe, E. M., & Han, K. T. (2022). A residual-based differential item functioning detection framework in 
+#' item response theory. \emph{Journal of Educational Measurement}. https://doi.org/10.1111/jedm.12313.
 #'
 #' Lim, H., Choe, E. M., Han, K. T., Lee, S., & Hong, M. (2021, June). \emph{IRT residual approach 
 #' to detecting DIF.} Paper presented at the Annual Meeting of the National Council on Measurement 

@@ -326,7 +326,7 @@ print(dif_puri_rs)
 }
 \references{
 Lim, H., Choe, E. M., & Han, K. T. (2022). A residual-based differential item functioning detection framework in 
-item response theory. \emph{Journal of Educational Measurement}. 
+item response theory. \emph{Journal of Educational Measurement}. https://doi.org/10.1111/jedm.12313.
 
 Lim, H., Choe, E. M., Han, K. T., Lee, S., & Hong, M. (2021, June). \emph{IRT residual approach 
 to detecting DIF.} Paper presented at the Annual Meeting of the National Council on Measurement 
