@@ -6,3 +6,4 @@ data-raw/
 .Ruserdata
 cran-comments.md
 R/rdif2.R
+R/catsib2.R
