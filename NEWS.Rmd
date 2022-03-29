@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 
-# irtplay_1.6.4 (2022-03-04)
+# irtplay_1.6.4 (2022-03-29)
 o added a beta version of new function, 'catsib()', for computing CATSIB statistic (Nandakumar & Roussos, 2004) to detect DIF on items in CAT. 
 
 o added a new function, 'est_mg()', for the multiple group (MG) item calibration (Bock & Zimowski, 1997). The new function also supports the MG fixed item calibration (MG-FIPC) method (e.g., Kim & Kolen, 2016).
@@ -41,7 +41,7 @@ o fixed the `est_irt()` function so that the log-likelihood, AIC, and BIC can be
 
 o added a new argument of 'item.id' in the 'est_irt()' and 'est_item()' functions where a user can provide item IDs.  
 
-o added a new 'rdif()' function which computes RDIF statistics (Lim, Choe, & Han, under review; Lim, Choe, Han, Lee, & Hong, 2021) for analyzing DIF.  
+o added a new 'rdif()' function which computes RDIF statistics (Lim, Choe, & Han, 2022; Lim, Choe, Han, Lee, & Hong, 2021) for analyzing DIF.  
 
 o updated 'plot.test.info()' function so that (a) multiple item information functions can be displayed in one panel by setting 'overlap = TRUE' and (b) a plot of conditional standard error of estimation at a test level can be shown by setting 'csee = TRUE'. 
 

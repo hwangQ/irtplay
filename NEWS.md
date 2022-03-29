@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# irtplay\_1.6.4 (2022-01-05)
+# irtplay\_1.6.4 (2022-03-29)
 
 o added a beta version of new function, ‘catsib()’, for computing CATSIB
 statistic (Nandakumar & Roussos, 2004) to detect DIF on items in CAT.
@@ -19,12 +19,12 @@ implementing the fixed item parameter calibration (FIPC), the fixed
 items can be specified by either of the ‘fix.loc’ or ‘fix.id’ arguments.
 
 o updated the `write.flexmirt()` function so that it can also create a
-“-prm.txt” file for flexMIRT software with multiple groups. The
-previous version only worked for a single group.
+“-prm.txt” file for flexMIRT software with multiple groups. The previous
+version only worked for a single group.
 
 o updated the `write.flexmirt()` function so that it can also create a
-“-prm.txt” file for flexMIRT software with multiple groups. The
-previous version only worked for a single group.
+“-prm.txt” file for flexMIRT software with multiple groups. The previous
+version only worked for a single group.
 
 o added a new simulated data sets called `simMG` with three multiple
 groups.
@@ -47,8 +47,7 @@ o added a new argument of ‘item.id’ in the ‘est\_irt()’ and
 ‘est\_item()’ functions where a user can provide item IDs.
 
 o added a new ‘rdif()’ function which computes RDIF statistics (Lim,
-Choe, & Han, under review; Lim, Choe, Han, Lee, & Hong, 2021) for
-analyzing DIF.
+Choe, & Han, 2022; Lim, Choe, Han, Lee, & Hong, 2021) for analyzing DIF.
 
 o updated ‘plot.test.info()’ function so that (a) multiple item
 information functions can be displayed in one panel by setting ‘overlap
@@ -69,7 +68,7 @@ o Updated ‘bring.flexmirt()’ function to read the empirical histogram of
 population distribution from “-prm.txt” file.
 
 o Updated ‘run\_flexmirt()’ function to run flexMIRT in which version is
-\>= 3.6.
+&gt;= 3.6.
 
 o Updated ‘est\_item()’ function to produce a variance-covariance matrix
 for item parameter estimates.
@@ -117,8 +116,8 @@ log-likelihood after each EM cycle using the argument of ‘verbose’.
 
 o Fixed an error of the ‘est\_irt’ function when only dichotomous items
 are used with ‘fipc = TRUE’. In that condition, an error message of
-“subscript out of bounds” was returned in the previous version. No
-error message is shown in the updated version. (thanks to Ahmet GUVEN)
+“subscript out of bounds” was returned in the previous version. No error
+message is shown in the updated version. (thanks to Ahmet GUVEN)
 
 o Fixed the ‘lwrc’ function so that it can return the probability
 results even when only a single theta value is used.
@@ -142,8 +141,8 @@ threshold) parameters in ‘est\_irt’, ‘est\_item’, and ‘llike\_item’
 functions.
 
 o Solved unstable item parameter estimation of ‘est\_irt’ and
-‘est\_item’ functions which occured when the scaling factor of ‘D’
-is other than 1.0 and ‘use.aprior = TRUE’.
+‘est\_item’ functions which occured when the scaling factor of ‘D’ is
+other than 1.0 and ‘use.aprior = TRUE’.
 
 o Fixed an error which occured in the function ‘est\_irt’ when the data
 set contains missing values and ‘fix.a.1pl = FALSE’.
