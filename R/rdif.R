@@ -1,4 +1,4 @@
-#' IRT residual-based DIF (RDIF) detection framework2
+#' IRT residual-based DIF (RDIF) detection framework
 #' 
 #' @description This function computes three RDIF statistics (Lim, Choe, & Han, 2022; Lim, Choe, Han, Lee, & Hong, 2021), 
 #' which are \eqn{RDIF_{R}}, \eqn{RDIF_{S}}, and \eqn{RDIF_{RS}}, for each item. \eqn{RDIF_{R}} primarily 
@@ -211,21 +211,21 @@
 #' print(dif_nopuri_2)
 #' 
 #' # (b)-1 compute RDIF statistics with a purification 
-#' #       based on \eqn{RDIF_{R}}
+#' #       based on RDIF_R
 #' dif_puri_r <- rdif(x=est_par, data=data, score=score, 
 #'                    group=group, focal.name=1, D=1, alpha=0.05, 
 #'                    purify=TRUE, purify.by="rdif_r")
 #' print(dif_puri_r)
 #' 
 #' # (b)-2 compute RDIF statistics with a purification 
-#' #       based on \eqn{RDIF_{S}}
+#' #       based on RDIF_S
 #' dif_puri_s <- rdif(x=est_par, data=data, score=score, 
 #'                    group=group, focal.name=1, D=1, alpha=0.05, 
 #'                    purify=TRUE, purify.by="rdif_s")
 #' print(dif_puri_s)
 #' 
 #' # (b)-3 compute RDIF statistics with a purification 
-#' #       based on \eqn{RDIF_{RS}}
+#' #       based on RDIF_RS
 #' dif_puri_rs <- rdif(x=est_par, data=data, score=score, 
 #'                     group=group, focal.name=1, D=1, alpha=0.05, 
 #'                     purify=TRUE, purify.by="rdif_rs")
